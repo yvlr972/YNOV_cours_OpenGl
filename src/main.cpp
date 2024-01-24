@@ -11,11 +11,10 @@
 #include "shader.hpp"
 #include "constants.hpp"
 #include "color.hpp"
+#include "camera.hpp"
 
-// Vecteurs pour construire la matrice de vue de la caméra
-glm::vec3 cameraPos = CAMERA_START_POSITION;
-glm::vec3 cameraFront = CAMERA_START_FRONT;
-glm::vec3 cameraUp = CAMERA_START_UP;
+// Caméra
+Camera camera(CAMERA_START_POSITION);
 
 // Temps pour une itération de la boucle de rendu
 float deltaTime = 0.0f;
@@ -24,13 +23,10 @@ float lastFrame = 0.0f;
 
 // Variables pour la gestion de la souris
 bool firstMouse = true;
-float yaw = START_CAMERA_YAW;
-float pitch = START_CAMERA_PITCH;
+// float yaw = START_CAMERA_YAW;
+// float pitch = START_CAMERA_PITCH;
 float lastX = WINDOW_WIDTH / 2.0;
 float lastY = WINDOW_HEIGHT / 2.0;
-
-// Champ de vision de la caméra
-float fov = START_FOV;
 
 // Fonction appelée lors du redimensionnement de la fenêtre
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
@@ -45,15 +41,14 @@ void processInput(GLFWwindow *window)
         glfwSetWindowShouldClose(window, true);
 
     // Gestion des déplacements de la caméra avec les touches du clavier
-    float cameraSpeed = CAMERA_SPEED * deltaTime;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        cameraPos += cameraSpeed * cameraFront;
+        camera.processKeyboard(FORWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        cameraPos -= cameraSpeed * cameraFront;
+        camera.processKeyboard(BACKWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        camera.processKeyboard(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        camera.processKeyboard(RIGHT, deltaTime);
 }
 
 // Fonction appelée lors du déplacement de la souris
@@ -77,42 +72,13 @@ void mouse_callback(GLFWwindow *window, double xposIn, double yposIn)
     lastX = xpos;
     lastY = ypos;
 
-    // On multiplie le déplacement par un facteur pour le rendre moins sensible
-    float sensitivity = MOUSE_SENSITIVITY; // sensibilité du mouvement de la souris
-    xoffset *= sensitivity;
-    yoffset *= sensitivity;
-
-    // On met à jour les angles d'Euler de la caméra en fonction du déplacement de la souris
-    yaw += xoffset;
-    pitch += yoffset;
-
-    // On limite l'angle de rotation de la caméra sur l'axe des X
-    if (pitch > PITCH_LIMIT)
-        pitch = PITCH_LIMIT;
-    if (pitch < -PITCH_LIMIT)
-        pitch = -PITCH_LIMIT;
-
-    // On calcule le vecteur direction de la caméra
-    glm::vec3 direction;
-    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    direction.y = sin(glm::radians(pitch));
-    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-
-    // On met à jour le vecteur front de la caméra
-    cameraFront = glm::normalize(direction);
-    std::cout << "Camera Front - X: " << cameraFront.x << ", Y: " << cameraFront.y << ", Z: " << cameraFront.z << std::endl;
+    camera.processMouseMovement(xoffset, yoffset);
 }
 
 // Fonction appelée lors du défilement de la molette de la souris
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
 {
-    // On limite le champ de vision de la caméra
-    if (fov >= 1.0f && fov <= START_FOV)
-        fov -= yoffset;
-    if (fov <= 1.0f)
-        fov = 1.0f;
-    if (fov >= START_FOV)
-        fov = START_FOV;
+    camera.processMouseScroll(static_cast<float>(yoffset));
 }
 
 int main()
@@ -199,7 +165,6 @@ int main()
     unsigned int VAO;
     // OpenGL va générer un identifiant pour le VAO et on va pouvoir s'y référer via la variable VAO
     glGenVertexArrays(1, &VAO);
-
     // On active le VAO pour que les prochains appels à glVertexAttribPointer et glEnableVertexAttribArray enregistrent les paramètres pour ce VAO
     glBindVertexArray(VAO);
 
@@ -207,10 +172,8 @@ int main()
     unsigned int VBO;
     // OpenGL va générer un identifiant pour le VBO et on va pouvoir s'y référer via la variable VBO
     glGenBuffers(1, &VBO);
-
     // On active le VBO pour y écrire les données des vertices du triangle
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
     // On copie les données des vertices dans le VBO activé
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
@@ -222,8 +185,8 @@ int main()
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
+    // Chargement des textures
     unsigned int wallTexture, smileyTexture;
-
     // On précise que l'on veut inverser l'image verticalement lors du chargement des textures
     stbi_set_flip_vertically_on_load(true);
 
@@ -276,6 +239,7 @@ int main()
     glUniform1i(glGetUniformLocation(shaderProgram.ID, "texture1"), 0);
     glUniform1i(glGetUniformLocation(shaderProgram.ID, "texture2"), 1);
 
+    // On active le test de profondeur
     glEnable(GL_DEPTH_TEST);
 
     // On définit les positions des cubes dans la scène
@@ -322,11 +286,10 @@ int main()
         glBindTexture(GL_TEXTURE_2D, smileyTexture);
 
         // On calcule les matrices de transformation de la scène
-        glm::mat4 view;
-        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        glm::mat4 view = camera.getViewMatrix();
         glm::mat4 projection;
         // On prend en compte le FOV de la caméra pour la matrice de projection
-        projection = glm::perspective(glm::radians(fov), WINDOW_WIDTH / WINDOW_HEIGHT, NEAR_CLIP_PLANE_DISTANCE, FAR_CLIP_PLANE_DISTANCE);
+        projection = glm::perspective(glm::radians(camera.getZoom()), WINDOW_WIDTH / WINDOW_HEIGHT, NEAR_CLIP_PLANE_DISTANCE, FAR_CLIP_PLANE_DISTANCE);
 
         // On récupère les identifiants des matrices dans le shader
         unsigned int viewID = glGetUniformLocation(shaderProgram.ID, "view");
