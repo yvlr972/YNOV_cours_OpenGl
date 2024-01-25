@@ -23,8 +23,6 @@ float lastFrame = 0.0f;
 
 // Variables pour la gestion de la souris
 bool firstMouse = true;
-// float yaw = START_CAMERA_YAW;
-// float pitch = START_CAMERA_PITCH;
 float lastX = WINDOW_WIDTH / 2.0;
 float lastY = WINDOW_HEIGHT / 2.0;
 
@@ -115,145 +113,77 @@ int main()
     // On appelle la fonction framebuffer_size_callback à chaque fois que la fenêtre est redimensionnée
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    Shader shaderProgram(VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH);
+    Shader objectShader(OBJECT_VERTEX_SHADER_PATH, OBJECT_FRAGMENT_SHADER_PATH);
+    Shader lightSourceShader(LIGHT_VERTEX_SHADER_PATH, LIGHT_FRAGMENT_SHADER_PATH);
 
-    // On définit les vertices des triangles qui forment le cube
     float vertices[] = {
-        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-        0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+        0.5f, -0.5f, -0.5f,
+        0.5f, 0.5f, -0.5f,
+        -0.5f, -0.5f, -0.5f,
+        0.5f, 0.5f, -0.5f,
+        -0.5f, 0.5f, -0.5f,
+        -0.5f, -0.5f, -0.5f,
 
-        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-        0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-        0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-        0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-        -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
-        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+        -0.5f, -0.5f, 0.5f,
+        0.5f, -0.5f, 0.5f,
+        0.5f, 0.5f, 0.5f,
+        0.5f, 0.5f, 0.5f,
+        -0.5f, 0.5f, 0.5f,
+        -0.5f, -0.5f, 0.5f,
 
-        -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-        -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-        -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+        -0.5f, 0.5f, 0.5f,
+        -0.5f, 0.5f, -0.5f,
+        -0.5f, -0.5f, -0.5f,
+        -0.5f, -0.5f, -0.5f,
+        -0.5f, -0.5f, 0.5f,
+        -0.5f, 0.5f, 0.5f,
 
-        0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-        0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-        0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-        0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+        0.5f, 0.5f, 0.5f,
+        0.5f, 0.5f, -0.5f,
+        0.5f, -0.5f, -0.5f,
+        0.5f, -0.5f, -0.5f,
+        0.5f, -0.5f, 0.5f,
+        0.5f, 0.5f, 0.5f,
 
-        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
-        0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-        0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,
+        0.5f, -0.5f, -0.5f,
+        0.5f, -0.5f, 0.5f,
+        0.5f, -0.5f, 0.5f,
+        -0.5f, -0.5f, 0.5f,
+        -0.5f, -0.5f, -0.5f,
 
-        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-        0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-        0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-        -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
-        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f};
+        -0.5f, 0.5f, -0.5f,
+        0.5f, 0.5f, -0.5f,
+        0.5f, 0.5f, 0.5f,
+        0.5f, 0.5f, 0.5f,
+        -0.5f, 0.5f, 0.5f,
+        -0.5f, 0.5f, -0.5f};
 
-    // On crée un VA0 (Vertex Array Object) qui va contenir les paramètres de configuration des vertex buffer objects
-    unsigned int VAO;
-    // OpenGL va générer un identifiant pour le VAO et on va pouvoir s'y référer via la variable VAO
-    glGenVertexArrays(1, &VAO);
-    // On active le VAO pour que les prochains appels à glVertexAttribPointer et glEnableVertexAttribArray enregistrent les paramètres pour ce VAO
-    glBindVertexArray(VAO);
-
-    // On crée un VBO (Vertex Buffer Object) qui va contenir les coordonnées des vertices du triangle
+    // Création des VBO et VAO
     unsigned int VBO;
-    // OpenGL va générer un identifiant pour le VBO et on va pouvoir s'y référer via la variable VBO
     glGenBuffers(1, &VBO);
-    // On active le VBO pour y écrire les données des vertices du triangle
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    // On copie les données des vertices dans le VBO activé
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    // On configure la manière dont OpenGL doit interpréter les données du VBO activé, ici les coordonnées des vertices :
-    // Ici les positions des vertices
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
+    // On crée un VAO pour le cube qui va réfléchir la lumière
+    unsigned int objectVAO;
+    glGenVertexArrays(1, &objectVAO);
+    glBindVertexArray(objectVAO);
+
+    // Rappel : le VAO récupère la référence au VBO à cette étape
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
-    // Ici les coordonnées de texture des vertices
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
-    glEnableVertexAttribArray(2);
 
-    // Chargement des textures
-    unsigned int wallTexture, smileyTexture;
-    // On précise que l'on veut inverser l'image verticalement lors du chargement des textures
-    stbi_set_flip_vertically_on_load(true);
+    // On crée un VAO pour le cube qui va émettre la lumière, on utilise le même VBO
+    unsigned int lightSourceVAO;
+    glGenVertexArrays(1, &lightSourceVAO);
+    glBindVertexArray(lightSourceVAO);
 
-    // texture1
-    glGenTextures(1, &wallTexture);
-    glBindTexture(GL_TEXTURE_2D, wallTexture);
-    // On définit les paramètres de la texture
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // On charge l'image de la texture et on la convertit en un format exploitable par OpenGL
-    int width, height, nrChannels;
-    unsigned char *data = stbi_load(TEXTURE_1_PATH, &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
-
-    // texture2
-    glGenTextures(1, &smileyTexture);
-    glBindTexture(GL_TEXTURE_2D, smileyTexture);
-    // On définit les paramètres de la texture
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // On charge l'image de la texture et on la convertit en un format exploitable par OpenGL
-    data = stbi_load(TEXTURE_2_PATH, &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        // Notez que smiley.png a une transparence et donc un canal alpha, on doit donc dire à OpenGL que le type de données est de GL_RGBA
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
-
-    // On active le shader program et on attribue leurs unités aux textures du shader
-    shaderProgram.use();
-    glUniform1i(glGetUniformLocation(shaderProgram.ID, "texture1"), 0);
-    glUniform1i(glGetUniformLocation(shaderProgram.ID, "texture2"), 1);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+    glEnableVertexAttribArray(0);
 
     // On active le test de profondeur
     glEnable(GL_DEPTH_TEST);
-
-    // On définit les positions des cubes dans la scène
-    glm::vec3 cubePositions[] = {
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(2.0f, 5.0f, -15.0f),
-        glm::vec3(-1.5f, -2.2f, -2.5f),
-        glm::vec3(-3.8f, -2.0f, -12.3f),
-        glm::vec3(2.4f, -0.4f, -3.5f),
-        glm::vec3(-1.7f, 3.0f, -7.5f),
-        glm::vec3(1.3f, -2.0f, -2.5f),
-        glm::vec3(1.5f, 2.0f, -2.5f),
-        glm::vec3(1.5f, 0.2f, -1.5f),
-        glm::vec3(-1.3f, 1.0f, -1.5f)};
 
     // On active le curseur et on le cache
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -276,39 +206,48 @@ int main()
         // On nettoie le buffer de couleur et on le remplit avec la couleur précédemment définie
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // On utilise le shader program pour dessiner le triangle
-        shaderProgram.use();
+        // Rendu du cube qui va réfléchir la lumière
 
-        // On associe nos textures aux unités de texture
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, wallTexture);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, smileyTexture);
+        // On utilise le shader program du cube qui va réfléchir la lumière
+        objectShader.use();
+        // On envoie les valeurs des couleurs de l'objet et de la lumière au shader via les uniform
+        glUniform3f(glGetUniformLocation(objectShader.ID, "objectColor"), 1.0f, 0.5f, 0.31f);
+        glUniform3f(glGetUniformLocation(objectShader.ID, "lightColor"), 1.0f, 1.0f, 1.0f);
+
+        // Matrice de modèle du cube qui va réfléchir la lumière (position 0, 0, 0)
+        glm::mat4 model = glm::mat4(1.0f);
+        glUniformMatrix4fv(glGetUniformLocation(objectShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 
         // On calcule les matrices de transformation de la scène
         glm::mat4 view = camera.getViewMatrix();
-        glm::mat4 projection;
+        glUniformMatrix4fv(glGetUniformLocation(objectShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
+
         // On prend en compte le FOV de la caméra pour la matrice de projection
-        projection = glm::perspective(glm::radians(camera.getZoom()), WINDOW_WIDTH / WINDOW_HEIGHT, NEAR_CLIP_PLANE_DISTANCE, FAR_CLIP_PLANE_DISTANCE);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.getZoom()), WINDOW_WIDTH / WINDOW_HEIGHT, NEAR_CLIP_PLANE_DISTANCE, FAR_CLIP_PLANE_DISTANCE);
+        glUniformMatrix4fv(glGetUniformLocation(objectShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
-        // On récupère les identifiants des matrices dans le shader
-        unsigned int viewID = glGetUniformLocation(shaderProgram.ID, "view");
-        unsigned int projectionID = glGetUniformLocation(shaderProgram.ID, "projection");
-        // On envoie les matrices au shader via leurs identifiants
-        glUniformMatrix4fv(viewID, 1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(projectionID, 1, GL_FALSE, glm::value_ptr(projection));
+        // On dessine le cube qui va réfléchir la lumière en utilisant le VAO qui lui est associé
+        glBindVertexArray(objectVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
-        // Pour chaque cube, on définit sa position, on lui applique une rotation et on le dessine
-        for (unsigned int i = 0; i < 10; i++)
-        {
-            glm::mat4 model;
-            model = glm::translate(model, cubePositions[i]);
-            model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 0.3f, 0.5f));
-            unsigned int modelID = glGetUniformLocation(shaderProgram.ID, "model");
-            glUniformMatrix4fv(modelID, 1, GL_FALSE, glm::value_ptr(model));
-            // On dessine les triangles définis par les indices
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
+        // Rendu du cube source de lumière
+
+        lightSourceShader.use();
+
+        // Matrice de modèle du cube source de lumière (position 1.2f, 1.0f, 2.0f)
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, LIGHT_SOURCE_POSITION);
+        // On rend le cube plus petit
+        model = glm::scale(model, glm::vec3(0.2f));
+        glUniformMatrix4fv(glGetUniformLocation(lightSourceShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+
+        // On utilise les mêmes matrices de vue et de projection que pour le cube qui va réfléchir la lumière
+        glUniformMatrix4fv(glGetUniformLocation(lightSourceShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(glGetUniformLocation(lightSourceShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+
+        // On dessine le cube source de lumière en utilisant le VAO qui lui est associé
+        glBindVertexArray(lightSourceVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
         // On échange les buffers de la fenêtre pour que ce qu'on vient de dessiner soit visible
         glfwSwapBuffers(window);
@@ -317,9 +256,11 @@ int main()
     }
 
     // Quand la fenêtre est fermée, on libère les ressources
-    glDeleteVertexArrays(1, &VAO);
+    glDeleteVertexArrays(1, &objectVAO);
+    glDeleteVertexArrays(1, &lightSourceVAO);
     glDeleteBuffers(1, &VBO);
-    shaderProgram.deleteProgram();
+    objectShader.deleteProgram();
+    lightSourceShader.deleteProgram();
 
     // On termine GLFW
     glfwTerminate();
