@@ -213,7 +213,10 @@ int main()
         // On utilise le shader program du cube qui va réfléchir la lumière
         objectShader.use();
         // On envoie les valeurs des couleurs de l'objet et de la lumière au shader via les uniform
-        glUniform3f(glGetUniformLocation(objectShader.ID, "objectColor"), 1.0f, 0.5f, 0.31f);
+        glUniform3f(glGetUniformLocation(objectShader.ID, "material.ambient"), 1.0f, 0.5f, 0.31f);
+        glUniform3f(glGetUniformLocation(objectShader.ID, "material.diffuse"), 1.0f, 0.5f, 0.31f);
+        glUniform3f(glGetUniformLocation(objectShader.ID, "material.specular"), 0.5f, 0.5f, 0.5f);
+        glUniform1f(glGetUniformLocation(objectShader.ID, "material.shininess"), 32.0f);
         glUniform3f(glGetUniformLocation(objectShader.ID, "lightColor"), 1.0f, 1.0f, 1.0f);
         glUniform3f(glGetUniformLocation(objectShader.ID, "lightPos"), LIGHT_SOURCE_POSITION.r, LIGHT_SOURCE_POSITION.g, LIGHT_SOURCE_POSITION.b);
         glUniform3f(glGetUniformLocation(objectShader.ID, "viewPos"), camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
