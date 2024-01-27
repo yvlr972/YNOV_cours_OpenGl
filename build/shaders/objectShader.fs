@@ -29,6 +29,8 @@ void main()
 {
     // Ambient
     vec3 ambient = light.ambient * material.ambient;
+    // Autre manière de faire, avec la diffuse map:
+    // vec3 ambient = light.ambient * texture(material.diffuse, TexCoords).rgb;
   	
     // Diffuse 
     vec3 norm = normalize(Normal);
