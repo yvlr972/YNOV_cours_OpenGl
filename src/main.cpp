@@ -242,8 +242,11 @@ int main()
     glfwSetCursorPosCallback(window, mouse_callback);
 
     unsigned int diffuseMap = loadTexture("resources/textures/container2.png");
+    unsigned int specularMap = loadTexture("resources/textures/container2_specular.png");
+
     objectShader.use();
     glUniform1i(glGetUniformLocation(objectShader.ID, "material.diffuse"), 0);
+    glUniform1i(glGetUniformLocation(objectShader.ID, "material.specular"), 1);
 
     // Boucle de rendu
     while (!glfwWindowShouldClose(window))
@@ -267,7 +270,6 @@ int main()
         objectShader.use();
         // On envoie les valeurs des couleurs de l'objet et de la lumière au shader via les uniform
         glUniform3f(glGetUniformLocation(objectShader.ID, "material.ambient"), 0.1f, 0.1f, 0.1f);
-        glUniform3f(glGetUniformLocation(objectShader.ID, "material.specular"), 0.5f, 0.5f, 0.5f);
         glUniform1f(glGetUniformLocation(objectShader.ID, "material.shininess"), 32.0f);
 
         // On modifie la couleur de la source de lumière au cours du temps
@@ -297,6 +299,9 @@ int main()
         // On active la texture à l'unite de texture 0
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, diffuseMap);
+        // On active la texture à l'unite de texture 1
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, specularMap);
 
         // On dessine le cube qui va réfléchir la lumière en utilisant le VAO qui lui est associé
         glBindVertexArray(objectVAO);
