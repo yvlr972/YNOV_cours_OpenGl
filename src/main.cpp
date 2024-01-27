@@ -217,8 +217,20 @@ int main()
         glUniform3f(glGetUniformLocation(objectShader.ID, "material.diffuse"), 1.0f, 0.5f, 0.31f);
         glUniform3f(glGetUniformLocation(objectShader.ID, "material.specular"), 0.5f, 0.5f, 0.5f);
         glUniform1f(glGetUniformLocation(objectShader.ID, "material.shininess"), 32.0f);
-        glUniform3f(glGetUniformLocation(objectShader.ID, "lightColor"), 1.0f, 1.0f, 1.0f);
-        glUniform3f(glGetUniformLocation(objectShader.ID, "lightPos"), LIGHT_SOURCE_POSITION.r, LIGHT_SOURCE_POSITION.g, LIGHT_SOURCE_POSITION.b);
+
+        // On modifie la couleur de la source de lumière au cours du temps
+        glm::vec3 lightColor;
+        lightColor.x = sin(glfwGetTime() * 2.0f);
+        lightColor.y = sin(glfwGetTime() * 0.7f);
+        lightColor.z = sin(glfwGetTime() * 1.3f);
+        // On ajuste la couleur de la lumière pour la diffuse et l'ambiante
+        glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
+        glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
+        glUniform3f(glGetUniformLocation(objectShader.ID, "light.ambient"), diffuseColor.x, diffuseColor.y, diffuseColor.z);
+        glUniform3f(glGetUniformLocation(objectShader.ID, "light.diffuse"), ambientColor.x, ambientColor.y, ambientColor.z);
+        glUniform3f(glGetUniformLocation(objectShader.ID, "light.specular"), lightColor.x, lightColor.y, lightColor.z);
+        glUniform3f(glGetUniformLocation(objectShader.ID, "light.position"), LIGHT_SOURCE_POSITION.r, LIGHT_SOURCE_POSITION.g, LIGHT_SOURCE_POSITION.b);
+
         glUniform3f(glGetUniformLocation(objectShader.ID, "viewPos"), camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
 
         // Matrice de modèle du cube qui va réfléchir la lumière (position 0, 0, 0)
@@ -240,6 +252,8 @@ int main()
         // Rendu du cube source de lumière
 
         lightSourceShader.use();
+
+        glUniform3f(glGetUniformLocation(lightSourceShader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z);
 
         // Matrice de modèle du cube source de lumière (position 1.2f, 1.0f, 2.0f)
         model = glm::mat4(1.0f);
