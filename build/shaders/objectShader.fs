@@ -28,7 +28,7 @@ uniform vec3 viewPos;
 void main()
 {
     // Ambient
-    vec3 ambient = light.ambient * texture(material.diffuse, TexCoords).rgb;//material.ambient;
+    vec3 ambient = light.ambient * material.ambient;
   	
     // Diffuse 
     vec3 norm = normalize(Normal);
