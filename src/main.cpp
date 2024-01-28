@@ -288,12 +288,16 @@ int main()
         // On modifie la couleur de la source de lumière au cours du temps
         glm::vec3 lightColor(1.0f);
         // On ajuste la couleur de la lumière pour la diffuse et l'ambiante
-        glm::vec3 diffuseColor = lightColor * glm::vec3(0.8f);
+        glm::vec3 diffuseColor = lightColor * glm::vec3(0.9f);
         glm::vec3 ambientColor = diffuseColor * glm::vec3(0.3f);
         glUniform3f(glGetUniformLocation(objectShader.ID, "light.ambient"), ambientColor.x, ambientColor.y, ambientColor.z);
         glUniform3f(glGetUniformLocation(objectShader.ID, "light.diffuse"), diffuseColor.x, diffuseColor.y, diffuseColor.z);
         glUniform3f(glGetUniformLocation(objectShader.ID, "light.specular"), lightColor.x, lightColor.y, lightColor.z);
         glUniform3f(glGetUniformLocation(objectShader.ID, "light.position"), LIGHT_SOURCE_POSITION.r, LIGHT_SOURCE_POSITION.g, LIGHT_SOURCE_POSITION.b);
+        glUniform1f(glGetUniformLocation(objectShader.ID, "light.constant"), 1.0f);
+        glUniform1f(glGetUniformLocation(objectShader.ID, "light.linear"), 0.09f);
+        glUniform1f(glGetUniformLocation(objectShader.ID, "light.quadratic"), 0.032f);
+
         // glUniform3f(glGetUniformLocation(objectShader.ID, "light.direction"), -0.2f, -1.0f, -0.3f);
 
         glUniform3f(glGetUniformLocation(objectShader.ID, "viewPos"), camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
