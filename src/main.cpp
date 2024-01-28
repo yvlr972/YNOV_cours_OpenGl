@@ -297,6 +297,9 @@ int main()
         glUniform1f(glGetUniformLocation(objectShader.ID, "light.constant"), 1.0f);
         glUniform1f(glGetUniformLocation(objectShader.ID, "light.linear"), 0.09f);
         glUniform1f(glGetUniformLocation(objectShader.ID, "light.quadratic"), 0.032f);
+        glUniform3f(glGetUniformLocation(objectShader.ID, "light.position"), camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
+        glUniform3f(glGetUniformLocation(objectShader.ID, "light.direction"), camera.getFront().x, camera.getFront().y, camera.getFront().z);
+        glUniform1f(glGetUniformLocation(objectShader.ID, "light.cosCutOff"), glm::cos(glm::radians(12.5f)));
 
         // glUniform3f(glGetUniformLocation(objectShader.ID, "light.direction"), -0.2f, -1.0f, -0.3f);
 
@@ -338,24 +341,24 @@ int main()
 
         // Rendu du cube source de lumière
 
-        lightSourceShader.use();
+        // lightSourceShader.use();
 
-        glUniform3f(glGetUniformLocation(lightSourceShader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z);
+        // glUniform3f(glGetUniformLocation(lightSourceShader.ID, "lightColor"), lightColor.x, lightColor.y, lightColor.z);
 
-        // Matrice de modèle du cube source de lumière (position 1.2f, 1.0f, 2.0f)
-        model = glm::mat4(1.0f);
-        model = glm::translate(model, LIGHT_SOURCE_POSITION);
-        // On rend le cube plus petit
-        model = glm::scale(model, glm::vec3(0.2f));
-        glUniformMatrix4fv(glGetUniformLocation(lightSourceShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+        // // Matrice de modèle du cube source de lumière (position 1.2f, 1.0f, 2.0f)
+        // model = glm::mat4(1.0f);
+        // model = glm::translate(model, LIGHT_SOURCE_POSITION);
+        // // On rend le cube plus petit
+        // model = glm::scale(model, glm::vec3(0.2f));
+        // glUniformMatrix4fv(glGetUniformLocation(lightSourceShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 
-        // On utilise les mêmes matrices de vue et de projection que pour le cube qui va réfléchir la lumière
-        glUniformMatrix4fv(glGetUniformLocation(lightSourceShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(glGetUniformLocation(lightSourceShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+        // // On utilise les mêmes matrices de vue et de projection que pour le cube qui va réfléchir la lumière
+        // glUniformMatrix4fv(glGetUniformLocation(lightSourceShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
+        // glUniformMatrix4fv(glGetUniformLocation(lightSourceShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
-        // On dessine le cube source de lumière en utilisant le VAO qui lui est associé
-        glBindVertexArray(lightSourceVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        // // On dessine le cube source de lumière en utilisant le VAO qui lui est associé
+        // glBindVertexArray(lightSourceVAO);
+        // glDrawArrays(GL_TRIANGLES, 0, 36);
 
         // On échange les buffers de la fenêtre pour que ce qu'on vient de dessiner soit visible
         glfwSwapBuffers(window);
