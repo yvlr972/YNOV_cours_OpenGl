@@ -300,6 +300,7 @@ int main()
         glUniform3f(glGetUniformLocation(objectShader.ID, "light.position"), camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
         glUniform3f(glGetUniformLocation(objectShader.ID, "light.direction"), camera.getFront().x, camera.getFront().y, camera.getFront().z);
         glUniform1f(glGetUniformLocation(objectShader.ID, "light.cosCutOff"), glm::cos(glm::radians(12.5f)));
+        glUniform1f(glGetUniformLocation(objectShader.ID, "light.cosOuterCutOff"), glm::cos(glm::radians(17.5f)));
 
         // glUniform3f(glGetUniformLocation(objectShader.ID, "light.direction"), -0.2f, -1.0f, -0.3f);
 
