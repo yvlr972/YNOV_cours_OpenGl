@@ -1,8 +1,9 @@
 #include "model.hpp"
 
+#include <iostream>
+
 #include "stb_image.h"
 
-// 10
 unsigned int TextureFromFile(const char *path, const string &directory)
 {
     string filename = string(path);
@@ -18,6 +19,8 @@ unsigned int TextureFromFile(const char *path, const string &directory)
         GLenum format;
         if (nrComponents == 1)
             format = GL_RED;
+        else if (nrComponents == 2)
+            format = GL_RG;
         else if (nrComponents == 3)
             format = GL_RGB;
         else if (nrComponents == 4)
@@ -43,13 +46,12 @@ unsigned int TextureFromFile(const char *path, const string &directory)
     return textureID;
 }
 
-// 4
 void Model::loadModel(string path)
 {
     Assimp::Importer import;
-    const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);	
-	
-    if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) 
+    const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate);
+
+    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
         cout << "ERROR::ASSIMP::" << import.GetErrorString() << endl;
         return;
@@ -59,33 +61,32 @@ void Model::loadModel(string path)
     processNode(scene->mRootNode, scene);
 }
 
-// 5
 void Model::processNode(aiNode *node, const aiScene *scene)
 {
-    // Processe tous les meshes de la node
-    for(unsigned int i = 0; i < node->mNumMeshes; i++)
+    // Pour chaque mesh de la node, on le traite et on l'ajoute à la liste des meshes du modèle
+    for (unsigned int i = 0; i < node->mNumMeshes; i++)
     {
-        aiMesh *mesh = scene->mMeshes[node->mMeshes[i]]; 
+        aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
         meshes.push_back(processMesh(mesh, scene));
     }
-    // Puis on fait la même chose pour chaque node enfant
-    for(unsigned int i = 0; i < node->mNumChildren; i++)
+    // Puis on fait la même chose pour chaque node enfant de cette node
+    for (unsigned int i = 0; i < node->mNumChildren; i++)
     {
         processNode(node->mChildren[i], scene);
     }
 }
 
-// 6
 Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene)
 {
     vector<Vertex> vertices;
     vector<unsigned int> indices;
     vector<Texture> textures;
 
-    for(unsigned int i = 0; i < mesh->mNumVertices; i++)
+    // Pour chaque vertex du mesh, on récupère ses coordonnées, normales et coordonnées de texture
+    for (unsigned int i = 0; i < mesh->mNumVertices; i++)
     {
         Vertex vertex;
-        glm::vec3 vector; 
+        glm::vec3 vector;
         // Coordonnées des vertices (mVertices représente les coordonnées des vertices du mesh)
         vector.x = mesh->mVertices[i].x;
         vector.y = mesh->mVertices[i].y;
@@ -97,7 +98,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene)
         vector.z = mesh->mNormals[i].z;
         vertex.Normal = vector;
         // Coordonnées de texture des vertices
-        if(mesh->mTextureCoords[0]) // Y a-t-il des coordonnées de texture ?
+        if (mesh->mTextureCoords[0]) // Y a-t-il des coordonnées de texture ?
         {
             glm::vec2 vec;
             vec.x = mesh->mTextureCoords[0][i].x;
@@ -109,65 +110,58 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene)
         vertices.push_back(vertex);
     }
     // On parcourt les faces pour récupérer les indices
-    for(unsigned int i = 0; i < mesh->mNumFaces; i++)
+    for (unsigned int i = 0; i < mesh->mNumFaces; i++)
     {
         aiFace face = mesh->mFaces[i];
-        for(unsigned int j = 0; j < face.mNumIndices; j++)
+        for (unsigned int j = 0; j < face.mNumIndices; j++)
             indices.push_back(face.mIndices[j]);
     }
-    // On récupère les textures
-    if(mesh->mMaterialIndex >= 0)
+    // On regarde si le mesh a des matériaux
+    if (mesh->mMaterialIndex >= 0)
     {
+        // Si c'est le cas, on récupère les matériaux de l'iaMesh stocké dans l'aiScene (car les matériaux peuvent être réutilisés d'un mesh à l'autre)
         aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-        vector<Texture> diffuseMaps = loadMaterialTextures(material, 
-                                                           aiTextureType_DIFFUSE, 
+        // On charge les textures de diffuse
+        vector<Texture> diffuseMaps = loadMaterialTextures(material,
+                                                           aiTextureType_DIFFUSE,
                                                            "texture_diffuse");
+        // On ajoute la totalité des textures de diffuse chargées à la fin de la liste des textures du mesh
         textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-        vector<Texture> specularMaps = loadMaterialTextures(material, 
-                                                            aiTextureType_SPECULAR, 
+        // On charge les textures de specular
+        vector<Texture> specularMaps = loadMaterialTextures(material,
+                                                            aiTextureType_SPECULAR,
                                                             "texture_specular");
+        // On ajoute la totalité des textures de specular chargées à la fin de la liste des textures du mesh
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     }
     return Mesh(vertices, indices, textures);
 }
 
-// 6.5
-// vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type, string typeName)
-// {
-//     vector<Texture> textures;
-//     for(unsigned int i = 0; i < mat->GetTextureCount(type); i++)
-//     {
-//         aiString str;
-//         mat->GetTexture(type, i, &str);
-//         Texture texture;
-//         texture.id = TextureFromFile(str.C_Str(), directory);
-//         texture.type = typeName;
-//         texture.path = str;
-//         textures.push_back(texture);
-//     }
-//     return textures;
-// }  
-
-// 9
 vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type, string typeName)
 {
     vector<Texture> textures;
-    for(unsigned int i = 0; i < mat->GetTextureCount(type); i++)
+    // On parcourt toutes les textures du type spécifié (diffuse ou specular)
+    for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
     {
+        // On récupère le path de la texture dans un aiString
         aiString str;
         mat->GetTexture(type, i, &str);
+
+        // On vérifie si la texture a déjà été chargée
         bool skip = false;
-        for(unsigned int j = 0; j < textures_loaded.size(); j++)
+        for (unsigned int j = 0; j < textures_loaded.size(); j++)
         {
-            if(std::strcmp(textures_loaded[j].path.data(), str.C_Str()) == 0)
+            // On compare le path de la texture avec chaque path des textures déjà chargées
+            if (std::strcmp(textures_loaded[j].path.data(), str.C_Str()) == 0)
             {
                 textures.push_back(textures_loaded[j]);
-                skip = true; 
+                skip = true;
                 break;
             }
         }
-        if(!skip)
-        {   // Si la texture n'a pas déjà été chargée, on la charge
+        // Si la texture n'a pas déjà été chargée, on la charge dans un objet Texture
+        if (!skip)
+        {
             Texture texture;
             texture.id = TextureFromFile(str.C_Str(), directory);
             texture.type = typeName;

@@ -6,33 +6,42 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include <iostream>
 
 #include "shader.hpp"
 #include "mesh.hpp"
 
-
 class Model
 {
-    public:
-        Model(char *path)
-        {
-            loadModel(path);
-        }
-        void Draw(Shader &shader);
-    private:
-        // Données du modèle
-        // 8
-        vector<Texture> textures_loaded; // On stocke toutes les textures chargées pour vérifier par la suite si elles sont déjà chargées
+public:
+    Model(string path)
+    {
+        loadModel(path);
+    }
+    void Draw(Shader &shader)
+    {
+        for (unsigned int i = 0; i < meshes.size(); i++)
+            meshes[i].Draw(shader);
+    }
+    void CleanUp()
+    {
+        for (unsigned int i = 0; i < meshes.size(); i++)
+            meshes[i].CleanUp();
+    }
 
-        vector<Mesh> meshes;
-        string directory;
+private:
+    // On stocke toutes les textures chargées pour vérifier par la suite si elles sont déjà chargées
+    vector<Texture> textures_loaded;
 
-        void loadModel(string path);
-        void processNode(aiNode *node, const aiScene *scene);
-        Mesh processMesh(aiMesh *mesh, const aiScene *scene);
-        vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, 
-                                             string typeName);
+    // Les meshes dont est composé le modèle
+    vector<Mesh> meshes;
+    // Le dossier dans lequel se trouve le modèle
+    string directory;
+
+    void loadModel(string path);
+    void processNode(aiNode *node, const aiScene *scene);
+    Mesh processMesh(aiMesh *mesh, const aiScene *scene);
+    vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type,
+                                         string typeName);
 };
 
 #endif

@@ -20,7 +20,6 @@ struct Texture
 {
     unsigned int id;
     string type; // diffuse ou specular
-    // 7
     string path; // On stocke le chemin du fichier pour vérifier si la texture est déjà chargée
 };
 
@@ -29,11 +28,17 @@ class Mesh
 public:
     // Données du mesh
     vector<Vertex> vertices;
-    vector<unsigned int> indices;
+    vector<unsigned int> indices; // Les indices des vertices pour l'EBO
     vector<Texture> textures;
 
     Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures);
     void Draw(Shader &shader);
+    void CleanUp()
+    {
+        glDeleteVertexArrays(1, &VAO);
+        glDeleteBuffers(1, &VBO);
+        glDeleteBuffers(1, &EBO);
+    }
 
 private:
     // Buffers

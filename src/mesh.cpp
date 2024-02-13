@@ -9,7 +9,6 @@ Mesh::Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture
     setupMesh();
 }
 
-// 2
 void Mesh::setupMesh()
 {
     glGenVertexArrays(1, &VAO);
@@ -38,21 +37,24 @@ void Mesh::setupMesh()
     glBindVertexArray(0);
 }
 
-// 3
-void Mesh::Draw(Shader &shader) 
+void Mesh::Draw(Shader &shader)
 {
+    // Initialisation des indices des maps diffuse et specular pour accéder aux uniforms sampler2D
     unsigned int diffuseNr = 1;
     unsigned int specularNr = 1;
-    for(unsigned int i = 0; i < textures.size(); i++)
+
+    for (unsigned int i = 0; i < textures.size(); i++)
     {
         glActiveTexture(GL_TEXTURE0 + i); // On active la texture avant de la lier
-        // On récupère le numéro de la texture (N) pour les uniform sampler2D
-        string number;
+        // On récupère le type (texture_diffuse ou texture_specular) et le numéro de la texture pour les uniform sampler2D
         string name = textures[i].type;
-        if(name == "texture_diffuse")
+        string number;
+
+        if (name == "texture_diffuse")
             number = std::to_string(diffuseNr++);
-        else if(name == "texture_specular")
+        else if (name == "texture_specular")
             number = std::to_string(specularNr++);
+
         glUniform1i(glGetUniformLocation(shader.ID, ("material." + name + number).c_str()), i);
         glBindTexture(GL_TEXTURE_2D, textures[i].id);
     }
@@ -62,4 +64,4 @@ void Mesh::Draw(Shader &shader)
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
-}  
+}
