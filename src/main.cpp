@@ -191,7 +191,9 @@ int main()
         glm::vec3(-4.0f, 2.0f, -12.0f),
         glm::vec3(0.0f, 0.0f, -3.0f)};
 
-    Model ourModel("resources/objects/backpack/backpack.obj");
+    stbi_set_flip_vertically_on_load(true);
+
+    Model ourModel("resources/objects/sword/Sting-Sword-lowpoly.obj");
 
     // Boucle de rendu
     while (!glfwWindowShouldClose(window))
