@@ -9,12 +9,14 @@
 
 #include "shader.hpp"
 #include "mesh.hpp"
+#include "stb_image.h"
 
 class Model
 {
 public:
-    Model(string path)
+    Model(string path, bool flipTextureVertically)
     {
+        stbi_set_flip_vertically_on_load(flipTextureVertically);
         loadModel(path);
     }
     void Draw(Shader &shader)

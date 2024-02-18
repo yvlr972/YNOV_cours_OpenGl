@@ -5,14 +5,17 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <vector>
+#include <memory>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
 #include "shader.hpp"
 #include "constants.hpp"
 #include "color.hpp"
 #include "camera.hpp"
-#include "model.hpp"
+#include "gameObject.hpp"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 // Caméra
 Camera camera(CAMERA_START_POSITION);
@@ -26,6 +29,8 @@ float lastFrame = 0.0f;
 bool firstMouse = true;
 float lastX;
 float lastY;
+
+std::vector<std::unique_ptr<GameObject>> gameObjects;
 
 // Fonction appelée lors du redimensionnement de la fenêtre
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
@@ -191,9 +196,15 @@ int main()
         glm::vec3(-4.0f, 2.0f, -12.0f),
         glm::vec3(0.0f, 0.0f, -3.0f)};
 
-    stbi_set_flip_vertically_on_load(true);
+    gameObjects.push_back(std::make_unique<GameObject>("backpack", "resources/objects/backpack/backpack.obj", false, objectShader));
 
-    Model ourModel("resources/objects/sword/Sting-Sword-lowpoly.obj");
+    // Test d'un gameObject créé avec des transformations en translation, rotation et échelle
+    glm::mat4 swordModelMatrix = glm::mat4(1.0f);
+    swordModelMatrix = glm::translate(swordModelMatrix, glm::vec3(3.0f, 2.0f, -5.0f));
+    swordModelMatrix = glm::rotate(swordModelMatrix, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    swordModelMatrix = glm::scale(swordModelMatrix, glm::vec3(0.2f, 0.2f, 0.2f));
+
+    gameObjects.push_back(std::make_unique<GameObject>("sword", "resources/objects/sword/Sting-Sword-lowpoly.obj", true, objectShader, swordModelMatrix));
 
     // Boucle de rendu
     while (!glfwWindowShouldClose(window))
@@ -275,9 +286,9 @@ int main()
 
         glUniform3f(glGetUniformLocation(objectShader.ID, "viewPos"), camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
 
-        // Matrice de modèle de l'objet qui va réfléchir la lumière (position 0, 0, 0)
-        glm::mat4 model = glm::mat4(1.0f);
-        glUniformMatrix4fv(glGetUniformLocation(objectShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+        // // Matrice de modèle de l'objet qui va réfléchir la lumière (position 0, 0, 0)
+        // glm::mat4 model = glm::mat4(1.0f);
+        // glUniformMatrix4fv(glGetUniformLocation(objectShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 
         // On calcule les matrices de transformation de la scène
         glm::mat4 view = camera.getViewMatrix();
@@ -287,7 +298,10 @@ int main()
         glm::mat4 projection = glm::perspective(glm::radians(camera.getZoom()), WINDOW_WIDTH / WINDOW_HEIGHT, NEAR_CLIP_PLANE_DISTANCE, FAR_CLIP_PLANE_DISTANCE);
         glUniformMatrix4fv(glGetUniformLocation(objectShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
-        ourModel.Draw(objectShader);
+        for (auto &gameObject : gameObjects)
+        {
+            gameObject->Draw();
+        }
 
         // Rendu des cubes source de lumière
 
@@ -295,6 +309,9 @@ int main()
         // On utilise les mêmes matrices de vue et de projection que pour le cube qui va réfléchir la lumière
         glUniformMatrix4fv(glGetUniformLocation(lightSourceShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(glGetUniformLocation(lightSourceShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+
+        // Matrice de modèle des sources de lumière
+        glm::mat4 model = glm::mat4(1.0f);
 
         // On dessine les cubes source de lumière en utilisant le VAO qui leur est associé
         glBindVertexArray(lightSourceVAO);
@@ -317,7 +334,7 @@ int main()
     // Quand la fenêtre est fermée, on libère les ressources
     glDeleteVertexArrays(1, &lightSourceVAO);
     glDeleteBuffers(1, &VBO);
-    ourModel.CleanUp();
+    gameObjects.clear();
     objectShader.deleteProgram();
     lightSourceShader.deleteProgram();
 
