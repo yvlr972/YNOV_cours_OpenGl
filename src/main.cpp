@@ -381,10 +381,6 @@ int main()
 
         glUniform3f(glGetUniformLocation(objectShader.ID, "viewPos"), camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
 
-        // // Matrice de modèle de l'objet qui va réfléchir la lumière (position 0, 0, 0)
-        // glm::mat4 model = glm::mat4(1.0f);
-        // glUniformMatrix4fv(glGetUniformLocation(objectShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
-
         // On calcule les matrices de transformation de la scène
         glm::mat4 view = camera.getViewMatrix();
         glUniformMatrix4fv(glGetUniformLocation(objectShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));

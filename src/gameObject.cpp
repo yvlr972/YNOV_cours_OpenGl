@@ -1,6 +1,5 @@
 #include "gameObject.hpp"
 
-// GameObject::GameObject(string name, string path, bool flipTextureVertically, Shader &shader, std::vector<std::unique_ptr<GameObject>> &gameObjects) : shader(shader), graphicModel(path, flipTextureVertically), gameObjects(gameObjects)
 GameObject::GameObject(string name, string path, bool flipTextureVertically, Shader &shader, glm::mat4 modelMatrix, std::vector<std::unique_ptr<GameObject>>& gameObjects) : shader(shader), graphicModel(path, flipTextureVertically), gameObjects(gameObjects), modelMatrix(modelMatrix)
 {
     if (name.empty())
