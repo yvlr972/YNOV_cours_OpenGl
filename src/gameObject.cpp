@@ -1,9 +1,7 @@
 #include "gameObject.hpp"
 
-#include <iostream>
-
-// Ajouter : option sans name, prend directement le nom du fichier, ou option faire passer direcement une matrice de model à la création
-GameObject::GameObject(string name, string path, bool flipTextureVertically, Shader &shader) : shader(shader), graphicModel(path, flipTextureVertically)
+// GameObject::GameObject(string name, string path, bool flipTextureVertically, Shader &shader, std::vector<std::unique_ptr<GameObject>> &gameObjects) : shader(shader), graphicModel(path, flipTextureVertically), gameObjects(gameObjects)
+GameObject::GameObject(string name, string path, bool flipTextureVertically, Shader &shader, glm::mat4 modelMatrix, std::vector<std::unique_ptr<GameObject>>& gameObjects) : shader(shader), graphicModel(path, flipTextureVertically), gameObjects(gameObjects), modelMatrix(modelMatrix)
 {
     if (name.empty())
     {
@@ -15,6 +13,32 @@ GameObject::GameObject(string name, string path, bool flipTextureVertically, Sha
     else
     {
         this->name = name;
+    }
+
+    // Vérification de l'unicité du nom et ajustement si nécessaire
+    int nameSuffix = 1;               // Suffixe à ajouter au nom si nécessaire
+    string originalName = this->name; // Conserve le nom original pour la vérification
+    bool nameIsUnique = false;
+
+    while (!nameIsUnique)
+    {
+        nameIsUnique = true; // On part du principe que le nom est unique
+
+        // On parcourt tous les GameObjects pour vérifier l'unicité du nom
+        for (const auto &gameObject : gameObjects)
+        {
+            if (gameObject->name == this->name)
+            {
+                nameIsUnique = false; // Le nom n'est pas unique, on doit le modifier
+                break;                // Pas besoin de continuer la vérification
+            }
+        }
+
+        if (!nameIsUnique)
+        {
+            // Si le nom n'est pas unique, on ajoute/incremente le suffixe et réessaye
+            this->name = originalName + std::to_string(++nameSuffix);
+        }
     }
 }
 

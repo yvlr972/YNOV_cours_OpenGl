@@ -5,6 +5,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <vector>
+#include <memory>
 
 #include "model.hpp"
 #include "shader.hpp"
@@ -14,13 +16,26 @@ using namespace std;
 class GameObject
 {
 public:
-    GameObject(string name, string path, bool flipTextureVertically, Shader &shader);
-    GameObject(string path, bool flipTextureVertically, Shader &shader) : GameObject("", path, flipTextureVertically, shader)
-    {}
-    GameObject(string name, string path, bool flipTextureVertically, Shader &shader, glm::mat4 modelMatrix) : GameObject("", path, flipTextureVertically, shader)
-    {this->modelMatrix = modelMatrix;}
+    // Constructeur principal
+    GameObject(string name, string path, bool flipTextureVertically, Shader &shader, glm::mat4 modelMatrix, std::vector<std::unique_ptr<GameObject>> &gameObjects);
+
+    // Constructeur sans nom (utilise le chemin comme nom)
+    GameObject(string path, bool flipTextureVertically, Shader &shader, glm::mat4 modelMatrix, std::vector<std::unique_ptr<GameObject>> &gameObjects)
+        : GameObject("", path, flipTextureVertically, shader, modelMatrix, gameObjects) {}
+
+    // Constructeur sans transformation (utilise une matrice identité)
+    GameObject(string name, string path, bool flipTextureVertically, Shader &shader, std::vector<std::unique_ptr<GameObject>> &gameObjects)
+        : GameObject(name, path, flipTextureVertically, shader, glm::mat4(1.0f), gameObjects) {}
+
+    // Constructeur sans nom et sans transformation
+    GameObject(string path, bool flipTextureVertically, Shader &shader, std::vector<std::unique_ptr<GameObject>> &gameObjects)
+        : GameObject("", path, flipTextureVertically, shader, glm::mat4(1.0f), gameObjects) {}
+
     ~GameObject() { graphicModel.CleanUp(); }
+
     void Draw();
+
+    string getName() { return name; }
 
     glm::mat4 getModelMatrix() { return modelMatrix; }
     void modelMatrixTranslate(glm::vec3 translation) { modelMatrix = glm::translate(modelMatrix, translation); }
@@ -32,6 +47,7 @@ private:
     Model graphicModel;
     Shader &shader;
     glm::mat4 modelMatrix = glm::mat4(1.0f);
+    std::vector<std::unique_ptr<GameObject>> &gameObjects;
 };
 
 #endif

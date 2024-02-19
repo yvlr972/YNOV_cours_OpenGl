@@ -61,6 +61,8 @@
         "cinttypes": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp",
-        "gameobject": "c"
+        "gameobject": "c",
+        "bitset": "cpp",
+        "regex": "cpp"
     }
 }
