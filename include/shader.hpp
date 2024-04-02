@@ -10,6 +10,9 @@ public:
     // L’ID du shader program
     unsigned int ID;
 
+    // Constructeur vide par défaut
+    Shader() = default;
+
     // Le constructeur lit et construit le shader
     Shader(const GLchar *vertexPath, const GLchar *fragmentPath);
     // Suppression du programme

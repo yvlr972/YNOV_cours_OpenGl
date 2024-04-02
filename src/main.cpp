@@ -22,6 +22,9 @@
 // Caméra
 Camera camera(CAMERA_START_POSITION);
 
+// Shader pour les objets, initialisé plus tard dans le main()
+Shader objectShader;
+
 // Temps pour une itération de la boucle de rendu
 float deltaTime = 0.0f;
 // Temps du dernier appel de la boucle de rendu
@@ -172,6 +175,8 @@ void processInput(GLFWwindow *window)
                     std::cout << "GameObject '" << gameObjectName << "' cree.\n"
                               << "Path: " << objectPath << "\n"
                               << "Inverser verticalement les textures: " << std::boolalpha << flipTextureVertically << std::endl;
+
+                    gameObjects.push_back(std::make_unique<GameObject>(gameObjectName, objectPath, flipTextureVertically, objectShader, gameObjects));
                 }
                 else
                 {
@@ -265,7 +270,7 @@ int main()
     // On appelle la fonction framebuffer_size_callback à chaque fois que la fenêtre est redimensionnée
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    Shader objectShader(OBJECT_VERTEX_SHADER_PATH, OBJECT_FRAGMENT_SHADER_PATH);
+    objectShader = Shader(OBJECT_VERTEX_SHADER_PATH, OBJECT_FRAGMENT_SHADER_PATH);
     Shader lightSourceShader(LIGHT_VERTEX_SHADER_PATH, LIGHT_FRAGMENT_SHADER_PATH);
 
     // Données de vertices pour les cubes sources de lumière
