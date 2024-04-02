@@ -37,6 +37,9 @@ std::vector<std::unique_ptr<GameObject>> gameObjects;
 // Variables pour la gestion du clavier
 bool graveAccentKeyPressed = false;
 
+// Définition du motif regex pour les instructions de création d'un gameObject
+std::regex gameObjectCreationPattern(R"(^(\S+)\s+(\S+)\s+(0|1)$)");
+
 // Définition des motifs regex pour les instructions de transformation d'un gameObject
 std::regex translatePattern(R"(t\s+([-\d\.]+)\s+([-\d\.]+)\s+([-\d\.]+))");
 std::regex rotatePattern(R"(r\s+([-\d\.]+)\s+([-\d\.]+)\s+([-\d\.]+)\s+([-\d\.]+))");
@@ -129,17 +132,48 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.processKeyboard(RIGHT, deltaTime);
 
-    // Modification de GameObject
+    // Menu "²"
     if (glfwGetKey(window, GLFW_KEY_GRAVE_ACCENT) == GLFW_PRESS && !graveAccentKeyPressed)
     {
         graveAccentKeyPressed = true;
-        std::cout << "Pour modifier un gameObject :"
+        // Menu principal
+        std::cout << "Menu principal :"
                   << std::endl
-                  << "nomDuGameObject t valeurX valeurY valeurZ r valeurAngle valeurAxeX valeurAxeY valeurAxeZ s valeurX valeurY valeurZ :"
+                  << "Entrez 1 pour creer un nouveau GameObject."
+                  << std::endl
+                  << "Entrez 2 pour appliquer une transformation a un GameObject existant."
                   << std::endl;
-        string userInput;
-        std::getline(std::cin, userInput);
-        applyTransformations(userInput);
+
+        std::string choice;
+        std::getline(std::cin, choice);
+
+        if (choice == "1" || choice == "2")
+        {
+            // On convertit le choix en entier
+            int choiceInt = std::stoi(choice);
+
+            // Création d'un GameObject
+            if (choiceInt == 1)
+            {
+                std::cout << "Pour creer un nouveau GameObject :"
+                          << std::endl;
+            }
+            // Modification de GameObject
+            else if (choiceInt == 2)
+            {
+                std::cout << "Pour modifier un gameObject :"
+                          << std::endl
+                          << "nomDuGameObject t valeurX valeurY valeurZ r valeurAngle valeurAxeX valeurAxeY valeurAxeZ s valeurX valeurY valeurZ :"
+                          << std::endl;
+                string userInput;
+                std::getline(std::cin, userInput);
+                applyTransformations(userInput);
+            }
+        }
+        else
+        {
+            std::cout << "Entree invalide." << std::endl;
+        }
     }
     else if (glfwGetKey(window, GLFW_KEY_GRAVE_ACCENT) == GLFW_RELEASE)
     {
