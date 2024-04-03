@@ -347,19 +347,6 @@ int main()
         glm::vec3(-4.0f, 2.0f, -12.0f),
         glm::vec3(0.0f, 0.0f, -3.0f)};
 
-    gameObjects.push_back(std::make_unique<GameObject>("backpack", "resources/objects/backpack/backpack.obj", false, objectShader, gameObjects));
-
-    // Test d'un gameObject créé avec des transformations en translation, rotation et échelle
-    glm::mat4 swordModelMatrix = glm::mat4(1.0f);
-    swordModelMatrix = glm::translate(swordModelMatrix, glm::vec3(3.0f, 2.0f, -5.0f));
-    swordModelMatrix = glm::rotate(swordModelMatrix, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    swordModelMatrix = glm::scale(swordModelMatrix, glm::vec3(0.2f, 0.2f, 0.2f));
-
-    gameObjects.push_back(std::make_unique<GameObject>("sword", "resources/objects/sword/Sting-Sword-lowpoly.obj", true, objectShader, swordModelMatrix, gameObjects));
-    gameObjects.push_back(std::make_unique<GameObject>("sword", "resources/objects/sword/Sting-Sword-lowpoly.obj", true, objectShader, gameObjects));
-    gameObjects.push_back(std::make_unique<GameObject>("sword", "resources/objects/sword/Sting-Sword-lowpoly.obj", true, objectShader, gameObjects));
-    gameObjects.push_back(std::make_unique<GameObject>("sword", "resources/objects/sword/Sting-Sword-lowpoly.obj", true, objectShader, gameObjects));
-
     // Boucle de rendu
     while (!glfwWindowShouldClose(window))
     {
