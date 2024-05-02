@@ -1,6 +1,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <cmath>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -36,6 +38,13 @@ float lastX;
 float lastY;
 
 std::vector<std::unique_ptr<GameObject>> gameObjects;
+
+// Tableau de positions des pointLight
+std::vector<glm::vec3> pointLightPositions;
+
+/* TODO */
+// Tableau de Vertex pour LightCubes
+//std::vector<float> lightCubesVertices;
 
 // Variables pour la gestion du clavier
 bool graveAccentKeyPressed = false;
@@ -122,6 +131,21 @@ void applyTransformations(const std::string &input)
     }
 }
 
+// Fonction pour sauvegarder les gameObject dans un fichier .txt
+void saveGameObject(std::string gameObjectName, std::string gameObjectPath, bool flipTextureVertically, const char* filePath)
+{
+    std::ofstream fichier(filePath, std::ios::app); // Ouvrir en mode append
+
+    if (fichier) {
+        fichier << gameObjectName << " "
+                << gameObjectPath << " "
+                << flipTextureVertically << "\n";
+        fichier.close();
+    } else {
+        std::cerr << "Impossible d'ouvrir le fichier.\n";
+    }
+}
+
 // Fonction appelée lors de l'appui sur une touche du clavier
 void processInput(GLFWwindow *window)
 {
@@ -205,6 +229,9 @@ void processInput(GLFWwindow *window)
                               << "Inverser verticalement les textures: " << std::boolalpha << flipTextureVertically << std::endl;
 
                     gameObjects.push_back(std::make_unique<GameObject>(gameObjectName, objectPath, flipTextureVertically, objectShader, gameObjects));
+                    /* TODO */
+                    // On sauvegarde le gameObject dans le fichier GameObjectList.txt
+                    saveGameObject(gameObjectName, objectPath, flipTextureVertically, GAMEOBJECT_LIST_PATH);
                 }
                 else
                 {
@@ -264,6 +291,47 @@ void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
     camera.processMouseScroll(static_cast<float>(yoffset));
 }
 
+// Fonction pour charger les positions de pointLight à partir d'un fichier .txt
+void loadPointLightsPositions(std::vector<glm::vec3>& vecPositions, const char* filePath)
+{
+    std::ifstream fichier(filePath);
+
+    if (fichier) {
+        std::string ligne;
+        while (std::getline(fichier, ligne)) {
+            std::istringstream iss(ligne);
+            float x, y, z;
+            if (iss >> x >> y >> z) {
+                vecPositions.push_back(glm::vec3(x, y, z));
+            }
+        }
+        fichier.close();
+    } else {
+        std::cerr << "Impossible d'ouvrir le fichier.\n";
+    }
+}
+
+// Fonction pour charger les vertices de lightCube à partir d'un fichier .txt
+void loadLighCubeVertices(std::vector<float>& vecVertices, const char* filePath)
+{
+    std::ifstream fichier(filePath);
+
+    if (fichier) {
+        std::string ligne;
+        while (std::getline(fichier, ligne)) {
+            std::istringstream iss(ligne);
+            float vertex;
+            while (iss >> vertex) {
+                vecVertices.push_back(vertex);
+            }
+        }
+        fichier.close();
+    } else {
+        std::cerr << "Impossible d'ouvrir le fichier.\n";
+    }
+}
+
+
 int main()
 {
     // Initialisation de GLFW
@@ -300,6 +368,10 @@ int main()
 
     objectShader = Shader(OBJECT_VERTEX_SHADER_PATH, OBJECT_FRAGMENT_SHADER_PATH);
     Shader lightSourceShader(LIGHT_VERTEX_SHADER_PATH, LIGHT_FRAGMENT_SHADER_PATH);
+
+    /* TODO */
+    // Charge les positions des point lights à partir du fhichier CubeVertices.txt
+    // loadLighCubeVertices(lightCubesVertices, CUBE_VERTICES_PATH);
 
     // Données de vertices pour les cubes sources de lumière
     float lightCubesVertices[] = {
@@ -370,12 +442,13 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
 
-    // Positions des point lights
-    glm::vec3 pointLightPositions[] = {
-        glm::vec3(0.7f, 0.2f, 2.0f),
-        glm::vec3(2.3f, -3.3f, -4.0f),
-        glm::vec3(-4.0f, 2.0f, -12.0f),
-        glm::vec3(0.0f, 0.0f, -3.0f)};
+    // Charge les positions des point lights à partir du fhichier PointLightsPositions.txt
+    loadPointLightsPositions(pointLightPositions, POINT_LIGHT_PATH);
+
+    /*pointLightPositions.push_back(glm::vec3(0.7f, 0.2f, 2.0f));
+    pointLightPositions.push_back(glm::vec3(2.3f, -3.3f, -4.0f));
+    pointLightPositions.push_back(glm::vec3(-4.0f, 2.0f, -12.0f));
+    pointLightPositions.push_back(glm::vec3(0.0f, 0.0f, -3.0f));*/
 
     // Boucle de rendu
     while (!glfwWindowShouldClose(window))
