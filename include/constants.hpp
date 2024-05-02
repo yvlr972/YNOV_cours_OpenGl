@@ -6,8 +6,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "color.hpp"
 
-constexpr float WINDOW_WIDTH = 800.0f;
-constexpr float WINDOW_HEIGHT = 600.0f;
+constexpr float WINDOW_WIDTH = 1280.0f;
+constexpr float WINDOW_HEIGHT = 720.0f;
 
 constexpr glm::vec3 CAMERA_START_POSITION(0.0f, 0.0f, 3.0f);
 constexpr glm::vec3 CAMERA_START_FRONT(0.0f, 0.0f, -1.0f);
@@ -49,7 +49,9 @@ enum CameraMovement
     FORWARD,
     BACKWARD,
     LEFT,
-    RIGHT
+    RIGHT,
+    UP,
+    DOWN
 };
 
 #endif

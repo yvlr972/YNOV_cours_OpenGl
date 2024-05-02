@@ -40,6 +40,9 @@ std::vector<std::unique_ptr<GameObject>> gameObjects;
 // Variables pour la gestion du clavier
 bool graveAccentKeyPressed = false;
 
+// Variables pour faire apparaître la souris
+bool mouseHidden = true;
+
 // Définition du motif regex pour les instructions de création d'un gameObject
 std::regex gameObjectCreationPattern(R"(^(\S+)\s+(\S+)\s+(0|1)$)");
 
@@ -134,6 +137,31 @@ void processInput(GLFWwindow *window)
         camera.processKeyboard(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.processKeyboard(RIGHT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
+        camera.processKeyboard(UP, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
+        camera.processKeyboard(DOWN, deltaTime);
+
+
+    // Montrer/Masquer curseur souris
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+    {
+        if(mouseHidden)
+        {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            mouseHidden = false;
+        }
+        else
+        {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            mouseHidden = true;
+        }
+    }
+
+    // Augmenter/Diminuer intensité des cubes de lumière
+    // if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+    // if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+
 
     // Menu "²"
     if (glfwGetKey(window, GLFW_KEY_GRAVE_ACCENT) == GLFW_PRESS && !graveAccentKeyPressed)
@@ -274,7 +302,7 @@ int main()
     Shader lightSourceShader(LIGHT_VERTEX_SHADER_PATH, LIGHT_FRAGMENT_SHADER_PATH);
 
     // Données de vertices pour les cubes sources de lumière
-    float vertices[] = {
+    float lightCubesVertices[] = {
         // positions
         -0.5f, -0.5f, -0.5f,
         0.5f, -0.5f, -0.5f,
@@ -325,12 +353,14 @@ int main()
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     // On associe la fonction mouse_callback à l'évènement de déplacement de la souris
     glfwSetCursorPosCallback(window, mouse_callback);
+    // On associe la fonction scroll_callback à l'évènement de roulement de la mollette
+    glfwSetScrollCallback(window, scroll_callback);
 
     // Création des VBO et VAO
     unsigned int VBO;
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(lightCubesVertices), lightCubesVertices, GL_STATIC_DRAW);
 
     // On crée un VAO pour le cube qui va émettre la lumière, on utilise le même VBO
     unsigned int lightSourceVAO;

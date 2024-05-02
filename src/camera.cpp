@@ -38,6 +38,10 @@ void Camera::processKeyboard(CameraMovement direction, float deltaTime)
         _position -= _right * velocity;
     if (direction == RIGHT)
         _position += _right * velocity;
+    if (direction == UP)
+        _position += _up * velocity;
+    if (direction == DOWN)
+        _position -= _up * velocity;
 }
 
 // Traite l'entrée reçue d'un système d'entrée de type souris. Attend la valeur de décalage dans les deux directions x et y.
