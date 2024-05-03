@@ -42,9 +42,8 @@ std::vector<std::unique_ptr<GameObject>> gameObjects;
 // Tableau de positions des pointLight
 std::vector<glm::vec3> pointLightPositions;
 
-/* TODO */
-// Tableau de Vertex pour LightCubes
-//std::vector<float> lightCubesVertices;
+// Tableau des vertices pour LightCubes
+std::vector<float> lightCubesVertices;
 
 // Variables pour la gestion du clavier
 bool graveAccentKeyPressed = false;
@@ -369,54 +368,8 @@ int main()
     objectShader = Shader(OBJECT_VERTEX_SHADER_PATH, OBJECT_FRAGMENT_SHADER_PATH);
     Shader lightSourceShader(LIGHT_VERTEX_SHADER_PATH, LIGHT_FRAGMENT_SHADER_PATH);
 
-    /* TODO */
     // Charge les positions des point lights à partir du fhichier CubeVertices.txt
-    // loadLighCubeVertices(lightCubesVertices, CUBE_VERTICES_PATH);
-
-    // Données de vertices pour les cubes sources de lumière
-    float lightCubesVertices[] = {
-        // positions
-        -0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f, 0.5f, -0.5f,
-        0.5f, 0.5f, -0.5f,
-        -0.5f, 0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-
-        -0.5f, -0.5f, 0.5f,
-        0.5f, -0.5f, 0.5f,
-        0.5f, 0.5f, 0.5f,
-        0.5f, 0.5f, 0.5f,
-        -0.5f, 0.5f, 0.5f,
-        -0.5f, -0.5f, 0.5f,
-
-        -0.5f, 0.5f, 0.5f,
-        -0.5f, 0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-        -0.5f, -0.5f, 0.5f,
-        -0.5f, 0.5f, 0.5f,
-
-        0.5f, 0.5f, 0.5f,
-        0.5f, 0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, 0.5f,
-        0.5f, 0.5f, 0.5f,
-
-        -0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, 0.5f,
-        0.5f, -0.5f, 0.5f,
-        -0.5f, -0.5f, 0.5f,
-        -0.5f, -0.5f, -0.5f,
-
-        -0.5f, 0.5f, -0.5f,
-        0.5f, 0.5f, -0.5f,
-        0.5f, 0.5f, 0.5f,
-        0.5f, 0.5f, 0.5f,
-        -0.5f, 0.5f, 0.5f,
-        -0.5f, 0.5f, -0.5f};
+    loadLighCubeVertices(lightCubesVertices, CUBE_VERTICES_PATH);
 
     // On active le test de profondeur
     glEnable(GL_DEPTH_TEST);
@@ -432,7 +385,7 @@ int main()
     unsigned int VBO;
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(lightCubesVertices), lightCubesVertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, lightCubesVertices.size() * sizeof(float), &lightCubesVertices[0], GL_STATIC_DRAW);
 
     // On crée un VAO pour le cube qui va émettre la lumière, on utilise le même VBO
     unsigned int lightSourceVAO;
@@ -444,11 +397,6 @@ int main()
 
     // Charge les positions des point lights à partir du fhichier PointLightsPositions.txt
     loadPointLightsPositions(pointLightPositions, POINT_LIGHT_PATH);
-
-    /*pointLightPositions.push_back(glm::vec3(0.7f, 0.2f, 2.0f));
-    pointLightPositions.push_back(glm::vec3(2.3f, -3.3f, -4.0f));
-    pointLightPositions.push_back(glm::vec3(-4.0f, 2.0f, -12.0f));
-    pointLightPositions.push_back(glm::vec3(0.0f, 0.0f, -3.0f));*/
 
     // Boucle de rendu
     while (!glfwWindowShouldClose(window))
@@ -516,6 +464,21 @@ int main()
         glUniform1f(glGetUniformLocation(objectShader.ID, "pointLights[3].linear"), 0.09f);
         glUniform1f(glGetUniformLocation(objectShader.ID, "pointLights[3].quadratic"), 0.032f);
 
+        ///* TODO */
+        /// Point lights
+        /// A voir comment faire fonctionner le code dans cette boucle
+        /// les gameObjects créés apparissent noirs
+        /*for (unsigned int i = 1; i < pointLightPositions.size(); i++)
+        {
+            glUniform3f(glGetUniformLocation(objectShader.ID, "pointLights[i].position"), pointLightPositions[i].x, pointLightPositions[i].y, pointLightPositions[i].z);
+            glUniform3f(glGetUniformLocation(objectShader.ID, "pointLights[i].ambient"), 0.05f, 0.05f, 0.05f);
+            glUniform3f(glGetUniformLocation(objectShader.ID, "pointLights[i].diffuse"), 0.8f, 0.8f, 0.8f);
+            glUniform3f(glGetUniformLocation(objectShader.ID, "pointLights[i].specular"), 1.0f, 1.0f, 1.0f);
+            glUniform1f(glGetUniformLocation(objectShader.ID, "pointLights[i].constant"), 1.0f);
+            glUniform1f(glGetUniformLocation(objectShader.ID, "pointLights[i].linear"), 0.09f);
+            glUniform1f(glGetUniformLocation(objectShader.ID, "pointLights[i].quadratic"), 0.032f);
+        }*/
+
         // SpotLight
         glUniform3f(glGetUniformLocation(objectShader.ID, "spotLight.position"), camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
         glUniform3f(glGetUniformLocation(objectShader.ID, "spotLight.direction"), camera.getFront().x, camera.getFront().y, camera.getFront().z);
@@ -555,9 +518,9 @@ int main()
 
         // On dessine les cubes source de lumière en utilisant le VAO qui leur est associé
         glBindVertexArray(lightSourceVAO);
-        for (unsigned int i = 0; i < 4; i++)
+        for (unsigned int i = 0; i < pointLightPositions.size(); i++)
         {
-            glUniform3f(glGetUniformLocation(lightSourceShader.ID, "lightColor"), 0.8f, 0.8f, 0.8f);
+            glUniform3f(glGetUniformLocation(lightSourceShader.ID, "lightColor"), 0.0f, 0.0f, 1.0f);
             model = glm::mat4(1.0f);
             model = glm::translate(model, pointLightPositions[i]);
             // model = glm::scale(model, glm::vec3(0.2f));

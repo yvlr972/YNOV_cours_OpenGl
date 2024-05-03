@@ -35,11 +35,11 @@ constexpr const char * LIGHT_FRAGMENT_SHADER_PATH = "shaders/lightShader.fs";
 constexpr const char * TEXTURE_1_PATH = "resources/textures/wall.jpg";
 constexpr const char * TEXTURE_2_PATH = "resources/textures/smiley.png";
 
-constexpr const char * POINT_LIGHT_PATH = "C:/Users/yaval/OneDrive - Ynov/Bureau/YNOV_Cours_OpenGL/Cours_OpenGL/OpenGL_Project/build/resources/PointLightsPositions.txt";
+constexpr const char * POINT_LIGHT_PATH = "resources/PointLightsPositions.txt";
 
-constexpr const char * CUBE_VERTICES_PATH = "C:/Users/yaval/OneDrive - Ynov/Bureau/YNOV_Cours_OpenGL/Cours_OpenGL/OpenGL_Project/build/resources/CubeVertices.txt";
+constexpr const char * CUBE_VERTICES_PATH = "resources/CubeVertices.txt";
 
-constexpr const char * GAMEOBJECT_LIST_PATH = "C:/Users/yaval/OneDrive - Ynov/Bureau/YNOV_Cours_OpenGL/Cours_OpenGL/OpenGL_Project/build/resources/GameObjectList.txt";
+constexpr const char * GAMEOBJECT_LIST_PATH = "resources/GameObjectList.txt";
 
 constexpr Color CLEAR_COLOR(0.1f, 0.1f, 0.1f, 1.0f);
 
