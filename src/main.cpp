@@ -311,7 +311,7 @@ void loadPointLightsPositions(std::vector<glm::vec3>& vecPositions, const char* 
 }
 
 // Fonction pour charger les vertices de lightCube à partir d'un fichier .txt
-void loadLighCubeVertices(std::vector<float>& vecVertices, const char* filePath)
+void loadLightCubesVertices(std::vector<float>& vecVertices, const char* filePath)
 {
     std::ifstream fichier(filePath);
 
@@ -369,7 +369,7 @@ int main()
     Shader lightSourceShader(LIGHT_VERTEX_SHADER_PATH, LIGHT_FRAGMENT_SHADER_PATH);
 
     // Charge les positions des point lights à partir du fhichier CubeVertices.txt
-    loadLighCubeVertices(lightCubesVertices, CUBE_VERTICES_PATH);
+    loadLightCubesVertices(lightCubesVertices, CUBE_VERTICES_PATH);
 
     // On active le test de profondeur
     glEnable(GL_DEPTH_TEST);
