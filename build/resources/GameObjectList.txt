@@ -1,5 +1,2 @@
 Sword resources/objects/sword/Sting-Sword-lowpoly.obj 1
-Sword resources/objects/sword/Sting-Sword-lowpoly.obj 1
-Object resources/objects/sword/Sting-Sword-lowpoly.obj 0
-backpack resources/objects/backpack/backpack.obj 1
 backpack resources/objects/backpack/backpack.obj 0

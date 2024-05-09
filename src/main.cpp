@@ -130,17 +130,52 @@ void applyTransformations(const std::string &input)
     }
 }
 
+// Fonction pour charger les gameObject à partir d'un fichier .txt
+void loadGameObjects(const char* filePath)
+{
+    std::ifstream fichier(filePath);
+
+    if (fichier)
+    {
+        std::string ligne;
+        while (std::getline(fichier, ligne))
+        {
+            std::istringstream iss(ligne);
+            std::smatch matches;
+            if (std::regex_search(ligne, matches, gameObjectCreationPattern))
+            {
+                std::string gameObjectName = matches[1];
+                std::string objectPath = matches[2];
+                bool flipTextureVertically = matches[3] == "1";
+
+                gameObjects.push_back(std::make_unique<GameObject>(gameObjectName, objectPath, flipTextureVertically, objectShader, gameObjects));
+            }
+            else
+            {
+                std::cout << "Format gameObject invalide." << std::endl;
+            }
+        }
+        fichier.close();
+    }
+    else {
+        std::cerr << "Impossible d'ouvrir le fichier.\n";
+    }
+}
+
 // Fonction pour sauvegarder les gameObject dans un fichier .txt
 void saveGameObject(std::string gameObjectName, std::string gameObjectPath, bool flipTextureVertically, const char* filePath)
 {
     std::ofstream fichier(filePath, std::ios::app); // Ouvrir en mode append
 
-    if (fichier) {
+    if (fichier)
+    {
         fichier << gameObjectName << " "
                 << gameObjectPath << " "
                 << flipTextureVertically << "\n";
         fichier.close();
-    } else {
+    }
+    else
+    {
         std::cerr << "Impossible d'ouvrir le fichier.\n";
     }
 }
@@ -228,7 +263,7 @@ void processInput(GLFWwindow *window)
                               << "Inverser verticalement les textures: " << std::boolalpha << flipTextureVertically << std::endl;
 
                     gameObjects.push_back(std::make_unique<GameObject>(gameObjectName, objectPath, flipTextureVertically, objectShader, gameObjects));
-                    /* TODO */
+
                     // On sauvegarde le gameObject dans le fichier GameObjectList.txt
                     saveGameObject(gameObjectName, objectPath, flipTextureVertically, GAMEOBJECT_LIST_PATH);
                 }
@@ -397,6 +432,9 @@ int main()
 
     // Charge les positions des point lights à partir du fhichier PointLightsPositions.txt
     loadPointLightsPositions(pointLightPositions, POINT_LIGHT_PATH);
+
+    // Charge les gameObjects à partir du fichier GameObjectList.txt
+    loadGameObjects(GAMEOBJECT_LIST_PATH);
 
     // Boucle de rendu
     while (!glfwWindowShouldClose(window))
