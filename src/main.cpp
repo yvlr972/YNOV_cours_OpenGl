@@ -44,8 +44,11 @@ std::vector<std::unique_ptr<GameObject>> gameObjects;
 // Tableau de positions des PointLights
 std::vector<glm::vec3> pointLightPositions;
 
-// Tableau de positions des SpotLights
-std::vector<SpotLight> SpotLights;
+// Tableau de PointLights
+std::vector<PointLight> pointLights;
+
+// Tableau de SpotLights
+std::vector<SpotLight> spotLights;
 
 // Tableau des vertices pour LightCubes
 std::vector<float> lightCubesVertices;
@@ -291,11 +294,10 @@ void processInput(GLFWwindow *window)
                 applyTransformations(userInput);
             }
         }
-        else if (choice == "3")
+        /*else if (choice == "3")
         {
-            /* code */
-        }
-        
+            
+        }*/
         else
         {
             std::cout << "Entree invalide." << std::endl;
@@ -362,9 +364,163 @@ void loadPointLightsPositions(std::vector<glm::vec3>& vecPositions, const char* 
     }
 }
 
+//Fonction pour charger les PointLights à partir d'un fichier .txt
 void loadPointLights(std::vector<PointLight>& vecPointLights, const char* filePath)
 {
+     std::ifstream fichier(filePath);
 
+    if (fichier)
+    {
+        std::string ligne;
+        PointLight pointLight;
+        while (std::getline(fichier, ligne))
+        {
+            std::istringstream iss(ligne);
+            std::string attribute;
+            iss >> attribute;
+
+            if (attribute == "Position:")
+            {
+                glm::vec3 position;
+                iss >> position.x >> position.y >> position.z;
+                pointLight.setPosition(position);
+            }
+            else if (attribute == "Ambient:")
+            {
+                glm::vec3 ambient;
+                iss >> ambient.r >> ambient.g >> ambient.b;
+                pointLight.setAmbient(ambient);
+            }
+            else if (attribute == "Diffuse:")
+            {
+                glm::vec3 diffuse;
+                iss >> diffuse.r >> diffuse.g >> diffuse.b;
+                pointLight.setDiffuse(diffuse);
+            }
+            else if (attribute == "Specular:")
+            {
+                glm::vec3 specular;
+                iss >> specular.r >> specular.g >> specular.b;
+                pointLight.setSpecular(specular);
+            }
+            else if (attribute == "Constant:")
+            {
+                float constant;
+                iss >> constant;
+                pointLight.setConstant(constant);
+            }
+            else if (attribute == "Linear:")
+            {
+                float linear;
+                iss >> linear;
+                pointLight.setLinear(linear);
+            }
+            else if (attribute == "Quadratic:")
+            {
+                float quadratic;
+                iss >> quadratic;
+                pointLight.setQuadratic(quadratic);
+            }
+            else if (attribute == "CubeRGB:")
+            {
+                glm::vec3 cubeRGB;
+                iss >> cubeRGB.r >> cubeRGB.g >> cubeRGB.b;
+                pointLight.setCubeRGB(cubeRGB);
+                vecPointLights.push_back(pointLight);
+            }
+
+        }
+        fichier.close();
+    }
+    else
+    {
+        std::cerr << "Impossible d'ouvrir le fichier.\n";
+    }
+}
+
+// Fonction pour charger les SpotLights à partir d'un fichier .txt
+void loadSpotLights(std::vector<SpotLight>& vecSpotLights, const char* filePath)
+{
+    std::ifstream fichier(filePath);
+
+    if (fichier)
+    {
+        std::string ligne;
+        SpotLight spotLight;
+        while (std::getline(fichier, ligne))
+        {
+            std::istringstream iss(ligne);
+            std::string attribute;
+            iss >> attribute;
+
+            if (attribute == "Position:")
+            {
+                glm::vec3 position;
+                iss >> position.x >> position.y >> position.z;
+                spotLight.setPosition(position);
+            }
+            else if (attribute == "Direction:")
+            {
+                glm::vec3 direction;
+                iss >> direction.x >> direction.y >> direction.z;
+                spotLight.setDirection(direction);
+            }
+            else if (attribute == "Ambient:")
+            {
+                glm::vec3 ambient;
+                iss >> ambient.r >> ambient.g >> ambient.b;
+                spotLight.setAmbient(ambient);
+            }
+            else if (attribute == "Diffuse:")
+            {
+                glm::vec3 diffuse;
+                iss >> diffuse.r >> diffuse.g >> diffuse.b;
+                spotLight.setDiffuse(diffuse);
+            }
+            else if (attribute == "Specular:")
+            {
+                glm::vec3 specular;
+                iss >> specular.r >> specular.g >> specular.b;
+                spotLight.setSpecular(specular);
+            }
+            else if (attribute == "Constant:")
+            {
+                float constant;
+                iss >> constant;
+                spotLight.setConstant(constant);
+            }
+            else if (attribute == "Linear:")
+            {
+                float linear;
+                iss >> linear;
+                spotLight.setLinear(linear);
+            }
+            else if (attribute == "Quadratic:")
+            {
+                float quadratic;
+                iss >> quadratic;
+                spotLight.setQuadratic(quadratic);
+            }
+            else if (attribute == "CutOff:")
+            {
+                float cutOff;
+                iss >> cutOff;
+                spotLight.setCutOff(cutOff);
+            }
+            else if (attribute == "OuterCutOff:")
+            {
+                float outerCutOff;
+                iss >> outerCutOff;
+                spotLight.setOuterCutOff(outerCutOff);
+                vecSpotLights.push_back(spotLight);
+            }
+        }
+        fichier.close();
+    }
+    else
+    {
+        std::cerr << "Impossible d'ouvrir le fichier.\n";
+    }
 }
 
 // Fonction pour charger les vertices de lightCube à partir d'un fichier .txt
@@ -458,7 +614,11 @@ int main()
     glEnableVertexAttribArray(0);
 
     // Charge les positions des point lights à partir du fhichier PointLightsPositions.txt
-    loadPointLightsPositions(pointLightPositions, POINT_LIGHTS_PATH);
+    //loadPointLightsPositions(pointLightPositions, POINT_LIGHTS_PATH);
+
+    loadPointLights(pointLights, POINT_LIGHTS_PATH);
+
+    loadSpotLights(spotLights, SPOT_LIGHTS_PATH);
 
     // Charge les gameObjects à partir du fichier GameObjectList.txt
     loadGameObjects(GAMEOBJECT_LIST_PATH);
@@ -493,70 +653,37 @@ int main()
         glUniform3f(glGetUniformLocation(objectShader.ID, "dirLight.diffuse"), 0.4f, 0.4f, 0.4f);
         glUniform3f(glGetUniformLocation(objectShader.ID, "dirLight.specular"), 0.5f, 0.5f, 0.5f);
 
-        // Point light 0
-        glUniform3f(glGetUniformLocation(objectShader.ID, "pointLights[0].position"), pointLightPositions[0].x, pointLightPositions[0].y, pointLightPositions[0].z);
-        glUniform3f(glGetUniformLocation(objectShader.ID, "pointLights[0].ambient"), 0.05f, 0.05f, 0.05f);
-        glUniform3f(glGetUniformLocation(objectShader.ID, "pointLights[0].diffuse"), 0.8f, 0.8f, 0.8f);
-        glUniform3f(glGetUniformLocation(objectShader.ID, "pointLights[0].specular"), 1.0f, 1.0f, 1.0f);
-        glUniform1f(glGetUniformLocation(objectShader.ID, "pointLights[0].constant"), 1.0f);
-        glUniform1f(glGetUniformLocation(objectShader.ID, "pointLights[0].linear"), 0.09f);
-        glUniform1f(glGetUniformLocation(objectShader.ID, "pointLights[0].quadratic"), 0.032f);
 
-        // Point light 1
-        glUniform3f(glGetUniformLocation(objectShader.ID, "pointLights[1].position"), pointLightPositions[1].x, pointLightPositions[1].y, pointLightPositions[1].z);
-        glUniform3f(glGetUniformLocation(objectShader.ID, "pointLights[1].ambient"), 0.05f, 0.05f, 0.05f);
-        glUniform3f(glGetUniformLocation(objectShader.ID, "pointLights[1].diffuse"), 0.8f, 0.8f, 0.8f);
-        glUniform3f(glGetUniformLocation(objectShader.ID, "pointLights[1].specular"), 1.0f, 1.0f, 1.0f);
-        glUniform1f(glGetUniformLocation(objectShader.ID, "pointLights[1].constant"), 1.0f);
-        glUniform1f(glGetUniformLocation(objectShader.ID, "pointLights[1].linear"), 0.09f);
-        glUniform1f(glGetUniformLocation(objectShader.ID, "pointLights[1].quadratic"), 0.032f);
-
-        // Point light 2
-        glUniform3f(glGetUniformLocation(objectShader.ID, "pointLights[2].position"), pointLightPositions[2].x, pointLightPositions[2].y, pointLightPositions[2].z);
-        glUniform3f(glGetUniformLocation(objectShader.ID, "pointLights[2].ambient"), 0.05f, 0.05f, 0.05f);
-        glUniform3f(glGetUniformLocation(objectShader.ID, "pointLights[2].diffuse"), 0.8f, 0.8f, 0.8f);
-        glUniform3f(glGetUniformLocation(objectShader.ID, "pointLights[2].specular"), 1.0f, 1.0f, 1.0f);
-        glUniform1f(glGetUniformLocation(objectShader.ID, "pointLights[2].constant"), 1.0f);
-        glUniform1f(glGetUniformLocation(objectShader.ID, "pointLights[2].linear"), 0.09f);
-        glUniform1f(glGetUniformLocation(objectShader.ID, "pointLights[2].quadratic"), 0.032f);
-
-        // Point light 3
-        glUniform3f(glGetUniformLocation(objectShader.ID, "pointLights[3].position"), pointLightPositions[3].x, pointLightPositions[3].y, pointLightPositions[3].z);
-        glUniform3f(glGetUniformLocation(objectShader.ID, "pointLights[3].ambient"), 0.05f, 0.05f, 0.05f);
-        glUniform3f(glGetUniformLocation(objectShader.ID, "pointLights[3].diffuse"), 0.8f, 0.8f, 0.8f);
-        glUniform3f(glGetUniformLocation(objectShader.ID, "pointLights[3].specular"), 1.0f, 1.0f, 1.0f);
-        glUniform1f(glGetUniformLocation(objectShader.ID, "pointLights[3].constant"), 1.0f);
-        glUniform1f(glGetUniformLocation(objectShader.ID, "pointLights[3].linear"), 0.09f);
-        glUniform1f(glGetUniformLocation(objectShader.ID, "pointLights[3].quadratic"), 0.032f);
-
-        ///* TODO */
-        /// Point lights
-        /// A voir comment faire fonctionner le code dans cette boucle
-        /// les gameObjects créés apparissent noirs
-        /*for (unsigned int i = 1; i < pointLightPositions.size(); i++)
+        /// Point Lights
+        for (unsigned int i = 0; i < pointLights.size(); i++)
         {
-            glUniform3f(glGetUniformLocation(objectShader.ID, "pointLights[i].position"), pointLightPositions[i].x, pointLightPositions[i].y, pointLightPositions[i].z);
-            glUniform3f(glGetUniformLocation(objectShader.ID, "pointLights[i].ambient"), 0.05f, 0.05f, 0.05f);
-            glUniform3f(glGetUniformLocation(objectShader.ID, "pointLights[i].diffuse"), 0.8f, 0.8f, 0.8f);
-            glUniform3f(glGetUniformLocation(objectShader.ID, "pointLights[i].specular"), 1.0f, 1.0f, 1.0f);
-            glUniform1f(glGetUniformLocation(objectShader.ID, "pointLights[i].constant"), 1.0f);
-            glUniform1f(glGetUniformLocation(objectShader.ID, "pointLights[i].linear"), 0.09f);
-            glUniform1f(glGetUniformLocation(objectShader.ID, "pointLights[i].quadratic"), 0.032f);
-        }*/
+            glUniform3f(glGetUniformLocation(objectShader.ID, ("pointLights[" + to_string(i) + "].position").c_str()), pointLights[i].getPosition().x, pointLights[i].getPosition().y, pointLights[i].getPosition().z);
+            glUniform3f(glGetUniformLocation(objectShader.ID, ("pointLights[" + to_string(i) + "].ambient").c_str()),  pointLights[i].getAmbient().r, pointLights[i].getAmbient().g, pointLights[i].getAmbient().b);
+            glUniform3f(glGetUniformLocation(objectShader.ID, ("pointLights[" + to_string(i) + "].diffuse").c_str()), pointLights[i].getDiffuse().r, pointLights[i].getDiffuse().g, pointLights[i].getDiffuse().b);
+            glUniform3f(glGetUniformLocation(objectShader.ID, ("pointLights[" + to_string(i) + "].specular").c_str()), pointLights[i].getSpecular().r, pointLights[i].getSpecular().g, pointLights[i].getSpecular().b);
+            glUniform1f(glGetUniformLocation(objectShader.ID, ("pointLights[" + to_string(i) + "].constant").c_str()), pointLights[i].getConstant());
+            glUniform1f(glGetUniformLocation(objectShader.ID, ("pointLights[" + to_string(i) + "].linear").c_str()), pointLights[i].getLinear());
+            glUniform1f(glGetUniformLocation(objectShader.ID, ("pointLights[" + to_string(i) + "].quadratic").c_str()), pointLights[i].getQuadratic());
+        }
 
-        // SpotLights
-        /*glUniform3f(glGetUniformLocation(objectShader.ID, "spotLight.position"), camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
-        glUniform3f(glGetUniformLocation(objectShader.ID, "spotLight.direction"), camera.getFront().x, camera.getFront().y, camera.getFront().z);
-        glUniform3f(glGetUniformLocation(objectShader.ID, "spotLight.ambient"), 0.0f, 0.0f, 0.0f);
-        glUniform3f(glGetUniformLocation(objectShader.ID, "spotLight.diffuse"), 1.0f, 1.0f, 1.0f);
-        glUniform3f(glGetUniformLocation(objectShader.ID, "spotLight.specular"), 1.0f, 1.0f, 1.0f);
-        glUniform1f(glGetUniformLocation(objectShader.ID, "spotLight.constant"), 1.0f);
-        glUniform1f(glGetUniformLocation(objectShader.ID, "spotLight.linear"), 0.09f);
-        glUniform1f(glGetUniformLocation(objectShader.ID, "spotLight.quadratic"), 0.032f);
-        glUniform1f(glGetUniformLocation(objectShader.ID, "spotLight.cosCutOff"), glm::cos(glm::radians(12.5f)));
-        glUniform1f(glGetUniformLocation(objectShader.ID, "spotLight.cosOuterCutOff"), glm::cos(glm::radians(15.0f)));*/
+        //-- TODO --
+        // Ne sont pas encore affichées correctement
+        // Spot Lights
+        for (unsigned int i = 0; i < spotLights.size(); i++)
+        {
+            glUniform3f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].position").c_str()), spotLights[i].getPosition().x, spotLights[i].getPosition().y, spotLights[i].getPosition().z);
+            glUniform3f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].direction").c_str()), spotLights[i].getDirection().x, spotLights[i].getDirection().y, spotLights[i].getDirection().z);
+            glUniform3f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].ambient").c_str()), spotLights[i].getAmbient().r, spotLights[i].getAmbient().g, spotLights[i].getAmbient().b);
+            glUniform3f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].diffuse").c_str()), spotLights[i].getDiffuse().r, spotLights[i].getDiffuse().g, spotLights[i].getDiffuse().b);
+            glUniform3f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].specular").c_str()), spotLights[i].getSpecular().r, spotLights[i].getSpecular().g, spotLights[i].getSpecular().b);
+            glUniform1f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].constant").c_str()), spotLights[i].getConstant());
+            glUniform1f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].linear").c_str()), spotLights[i].getLinear());
+            glUniform1f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].quadratic").c_str()), spotLights[i].getQuadratic());
+            glUniform1f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].cosCutOff").c_str()), spotLights[i].getCosCutOff());
+            glUniform1f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].cosOuterCutOff").c_str()), spotLights[i].getCosOuterCutOff());
+        }
 
-        // SpotLight de la caméra
+        // Spot Light de la caméra
         glUniform3f(glGetUniformLocation(objectShader.ID, "spotLight.position"), camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
         glUniform3f(glGetUniformLocation(objectShader.ID, "spotLight.direction"), camera.getFront().x, camera.getFront().y, camera.getFront().z);
         glUniform3f(glGetUniformLocation(objectShader.ID, "spotLight.ambient"), 0.0f, 0.0f, 0.0f);
@@ -595,11 +722,11 @@ int main()
 
         // On dessine les cubes source de lumière en utilisant le VAO qui leur est associé
         glBindVertexArray(lightSourceVAO);
-        for (unsigned int i = 0; i < pointLightPositions.size(); i++)
+        for (unsigned int i = 0; i < pointLights.size(); i++)
         {
-            glUniform3f(glGetUniformLocation(lightSourceShader.ID, "lightColor"), 0.0f, 0.0f, 1.0f);
+            glUniform3f(glGetUniformLocation(lightSourceShader.ID, "lightColor"), pointLights[i].getCubeRGB().r, pointLights[i].getCubeRGB().g, pointLights[i].getCubeRGB().b);
             model = glm::mat4(1.0f);
-            model = glm::translate(model, pointLightPositions[i]);
+            model = glm::translate(model, pointLights[i].getPosition());
             // model = glm::scale(model, glm::vec3(0.2f));
             glUniformMatrix4fv(glGetUniformLocation(lightSourceShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
             glDrawArrays(GL_TRIANGLES, 0, 36);

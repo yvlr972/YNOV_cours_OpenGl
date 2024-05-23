@@ -35,20 +35,20 @@ constexpr const char * LIGHT_FRAGMENT_SHADER_PATH = "shaders/lightShader.fs";
 constexpr const char * TEXTURE_1_PATH = "resources/textures/wall.jpg";
 constexpr const char * TEXTURE_2_PATH = "resources/textures/smiley.png";
 
+// Fichier de la DirectionalLight
+constexpr const char * DIRECTIONAL_LIGHT_PATH = "resources/DirectionalLight.txt";
+
 // Fichier des PointLights
-constexpr const char * POINT_LIGHTS_PATH = "resources/PointLightsPositions.txt";
+constexpr const char * POINT_LIGHTS_PATH = "resources/PointLights.txt";
+
+// Fichier des SpotLights
+constexpr const char * SPOT_LIGHTS_PATH = "resources/SpotLights.txt";
 
 // Fichier des Vertices des CubeLights
 constexpr const char * CUBE_VERTICES_PATH = "resources/CubeVertices.txt";
 
 // Fichier des GameObjects
 constexpr const char * GAMEOBJECT_LIST_PATH = "resources/GameObjectList.txt";
-
-// Fichier de la DirectionalLight
-constexpr const char * DIRECTIONAL_Light_PATH = "resources/DirectionalLight.txt";
-
-// Fichier des SpotLights
-constexpr const char * SPOT_LIGHTS_PATH = "resources/SpotLights.txt";
 
 constexpr Color CLEAR_COLOR(0.1f, 0.1f, 0.1f, 1.0f);
 

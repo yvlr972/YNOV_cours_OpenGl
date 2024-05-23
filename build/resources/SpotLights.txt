@@ -1,0 +1,30 @@
+Position: 0 3.0 3.0
+Direction: 0 0 0
+Ambient: 0.0 0.0 0.0
+Diffuse: 0 1.0 1.0
+Specular: 1.0 1.0 1.0
+Constant: 1.0
+Linear: 0.09
+Quadratic: 0.032
+CutOff: 8.0
+OuterCutOff: 11.0
+Position: 0 3.0 6.0
+Direction: 0 -1.0 0
+Ambient: 0.05 0.05 0.05
+Diffuse: 1.0 1.0 0
+Specular: 1.0 1.0 1.0
+Constant: 1.0
+Linear: 0.09
+Quadratic: 0.032
+CutOff: 8.0
+OuterCutOff: 11.0
+Position: 0 3.0 9.0
+Direction: 1.0 0 0
+Ambient: 0 0 1.0
+Diffuse: 0 1.0 1.0
+Specular: 1.0 1.0 1.0
+Constant: 1.0
+Linear: 0.09
+Quadratic: 0.032
+CutOff: 8.0
+OuterCutOff: 11.0
