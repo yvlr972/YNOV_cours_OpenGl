@@ -1,6 +1,6 @@
 #include "pointLight.hpp"
 
-PointLight::PointLight(Vec3 position, Vec3 ambient, Vec3 diffuse, Vec3 specular, float constant, float linear, float quadratic, Vec3 CubeRGB)
+PointLight::PointLight(glm::vec3 position, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, float constant, float linear, float quadratic, glm::vec3 CubeRGB)
 {
 
     PointLight(position, ambient, diffuse, specular, constant, linear, quadratic);
