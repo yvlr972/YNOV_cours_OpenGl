@@ -17,6 +17,8 @@
 #include "color.hpp"
 #include "camera.hpp"
 #include "gameObject.hpp"
+#include "spotLight.hpp"
+#include "pointLight.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -39,8 +41,11 @@ float lastY;
 
 std::vector<std::unique_ptr<GameObject>> gameObjects;
 
-// Tableau de positions des pointLight
+// Tableau de positions des PointLights
 std::vector<glm::vec3> pointLightPositions;
+
+// Tableau de positions des SpotLights
+std::vector<SpotLight> SpotLights;
 
 // Tableau des vertices pour LightCubes
 std::vector<float> lightCubesVertices;
@@ -216,7 +221,7 @@ void processInput(GLFWwindow *window)
         }
     }
 
-    // Augmenter/Diminuer intensité des cubes de lumière
+    // Augmenter/Diminuer intensité de la directionalLight
     // if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
     // if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 
@@ -231,6 +236,8 @@ void processInput(GLFWwindow *window)
                   << "Entrez 1 pour creer un nouveau GameObject."
                   << std::endl
                   << "Entrez 2 pour appliquer une transformation a un GameObject existant."
+                  << std::endl
+                  << "Entrez 3 pour créer une SpotLight."
                   << std::endl;
 
         std::string choice;
@@ -284,6 +291,11 @@ void processInput(GLFWwindow *window)
                 applyTransformations(userInput);
             }
         }
+        else if (choice == "3")
+        {
+            /* code */
+        }
+        
         else
         {
             std::cout << "Entree invalide." << std::endl;
@@ -330,17 +342,22 @@ void loadPointLightsPositions(std::vector<glm::vec3>& vecPositions, const char* 
 {
     std::ifstream fichier(filePath);
 
-    if (fichier) {
+    if (fichier)
+    {
         std::string ligne;
-        while (std::getline(fichier, ligne)) {
+        while (std::getline(fichier, ligne))
+        {
             std::istringstream iss(ligne);
             float x, y, z;
-            if (iss >> x >> y >> z) {
+            if (iss >> x >> y >> z)
+            {
                 vecPositions.push_back(glm::vec3(x, y, z));
             }
         }
         fichier.close();
-    } else {
+    }
+    else
+    {
         std::cerr << "Impossible d'ouvrir le fichier.\n";
     }
 }
@@ -350,17 +367,22 @@ void loadLightCubesVertices(std::vector<float>& vecVertices, const char* filePat
 {
     std::ifstream fichier(filePath);
 
-    if (fichier) {
+    if (fichier)
+    {
         std::string ligne;
-        while (std::getline(fichier, ligne)) {
+        while (std::getline(fichier, ligne))
+        {
             std::istringstream iss(ligne);
             float vertex;
-            while (iss >> vertex) {
+            while (iss >> vertex)
+            {
                 vecVertices.push_back(vertex);
             }
         }
         fichier.close();
-    } else {
+    }
+    else
+    {
         std::cerr << "Impossible d'ouvrir le fichier.\n";
     }
 }
@@ -517,7 +539,7 @@ int main()
             glUniform1f(glGetUniformLocation(objectShader.ID, "pointLights[i].quadratic"), 0.032f);
         }*/
 
-        // SpotLight
+        // SpotLight de la caméra
         glUniform3f(glGetUniformLocation(objectShader.ID, "spotLight.position"), camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
         glUniform3f(glGetUniformLocation(objectShader.ID, "spotLight.direction"), camera.getFront().x, camera.getFront().y, camera.getFront().z);
         glUniform3f(glGetUniformLocation(objectShader.ID, "spotLight.ambient"), 0.0f, 0.0f, 0.0f);
