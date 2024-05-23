@@ -362,6 +362,11 @@ void loadPointLightsPositions(std::vector<glm::vec3>& vecPositions, const char* 
     }
 }
 
+void loadPointLights(std::vector<PointLight>& vecPointLights, const char* filePath)
+{
+
+}
+
 // Fonction pour charger les vertices de lightCube à partir d'un fichier .txt
 void loadLightCubesVertices(std::vector<float>& vecVertices, const char* filePath)
 {
@@ -453,7 +458,7 @@ int main()
     glEnableVertexAttribArray(0);
 
     // Charge les positions des point lights à partir du fhichier PointLightsPositions.txt
-    loadPointLightsPositions(pointLightPositions, POINT_LIGHT_PATH);
+    loadPointLightsPositions(pointLightPositions, POINT_LIGHTS_PATH);
 
     // Charge les gameObjects à partir du fichier GameObjectList.txt
     loadGameObjects(GAMEOBJECT_LIST_PATH);
@@ -538,6 +543,18 @@ int main()
             glUniform1f(glGetUniformLocation(objectShader.ID, "pointLights[i].linear"), 0.09f);
             glUniform1f(glGetUniformLocation(objectShader.ID, "pointLights[i].quadratic"), 0.032f);
         }*/
+
+        // SpotLights
+        /*glUniform3f(glGetUniformLocation(objectShader.ID, "spotLight.position"), camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
+        glUniform3f(glGetUniformLocation(objectShader.ID, "spotLight.direction"), camera.getFront().x, camera.getFront().y, camera.getFront().z);
+        glUniform3f(glGetUniformLocation(objectShader.ID, "spotLight.ambient"), 0.0f, 0.0f, 0.0f);
+        glUniform3f(glGetUniformLocation(objectShader.ID, "spotLight.diffuse"), 1.0f, 1.0f, 1.0f);
+        glUniform3f(glGetUniformLocation(objectShader.ID, "spotLight.specular"), 1.0f, 1.0f, 1.0f);
+        glUniform1f(glGetUniformLocation(objectShader.ID, "spotLight.constant"), 1.0f);
+        glUniform1f(glGetUniformLocation(objectShader.ID, "spotLight.linear"), 0.09f);
+        glUniform1f(glGetUniformLocation(objectShader.ID, "spotLight.quadratic"), 0.032f);
+        glUniform1f(glGetUniformLocation(objectShader.ID, "spotLight.cosCutOff"), glm::cos(glm::radians(12.5f)));
+        glUniform1f(glGetUniformLocation(objectShader.ID, "spotLight.cosOuterCutOff"), glm::cos(glm::radians(15.0f)));*/
 
         // SpotLight de la caméra
         glUniform3f(glGetUniformLocation(objectShader.ID, "spotLight.position"), camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
