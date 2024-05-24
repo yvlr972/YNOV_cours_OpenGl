@@ -1,4 +1,4 @@
-Position: 0.7 0.2 2.0
+Position: 0 2.0 -2.0
 Ambient: 0.05 0.05 0.05
 Diffuse: 1.0 0 0
 Specular: 1.0 1.0 1.0
@@ -6,7 +6,7 @@ Constant: 1.0
 Linear: 0.09
 Quadratic: 0.032
 CubeRGB: 1.0 0 0
-Position: 2.3 -3.3 -4.0
+Position: 0 -2.0 -4.0
 Ambient: 0.05 0.05 0.05
 Diffuse: 0 1.0 0
 Specular: 1.0 1.0 1.0
@@ -14,7 +14,7 @@ Constant: 1.0
 Linear: 0.09
 Quadratic: 0.032
 CubeRGB: 0 1.0 0
-Position: -4.0 2.0 -12.0
+Position: 0 2.0 -12.0
 Ambient: 0.05 0.05 0.05
 Diffuse: 0 0 1.0
 Specular: 1.0 1.0 1.0
@@ -22,19 +22,19 @@ Constant: 1.0
 Linear: 0.09
 Quadratic: 0.032
 CubeRGB: 0 0 1.0
-Position: 0.0 0.0 -3.0
+Position: 0 2.0 -6.0
 Ambient: 0.05 0.05 0.05
-Diffuse: 0.5 0.5 0.5
+Diffuse: 1.0 0 1.0
 Specular: 1.0 1.0 1.0
 Constant: 1.0
 Linear: 0.09
 Quadratic: 0.032
-CubeRGB: 0.5 0.5 0.5
-Position: 1.0 1.0 1.0
+CubeRGB: 1.0 0 1.0
+Position: 0 -2.0 -8.0
 Ambient: 0.05 0.05 0.05
-Diffuse: 0 0 0
+Diffuse: 0 1.0 1.0
 Specular: 1.0 1.0 1.0
 Constant: 1.0
 Linear: 0.09
 Quadratic: 0.032
-CubeRGB: 0 0 0
+CubeRGB: 0 1.0 1.0

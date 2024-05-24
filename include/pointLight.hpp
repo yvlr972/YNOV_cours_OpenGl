@@ -28,6 +28,8 @@ void setLinear(float linear) { mLinear = linear; }
 void setQuadratic(float quadratic) { mQuadratic = quadratic; }
 void setCubeRGB(glm::vec3 cubeRGB) { mCubeRGB = cubeRGB; }
 
+void setCubeSameColor() { mCubeRGB = mDiffuse; } // Set the color of the cube to the same color as the diffuse light
+
 glm::vec3 getPosition() { return mPosition; }
 glm::vec3 getAmbient() { return mAmbient; }
 glm::vec3 getDiffuse() { return mDiffuse; }

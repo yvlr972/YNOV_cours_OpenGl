@@ -666,34 +666,33 @@ int main()
             glUniform1f(glGetUniformLocation(objectShader.ID, ("pointLights[" + to_string(i) + "].quadratic").c_str()), pointLights[i].getQuadratic());
         }
 
-        //-- TODO --
-        // Ne sont pas encore affichées correctement
-        // Spot Lights
-        for (unsigned int i = 0; i < spotLights.size(); i++)
-        {
-            glUniform3f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].position").c_str()), spotLights[i].getPosition().x, spotLights[i].getPosition().y, spotLights[i].getPosition().z);
-            glUniform3f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].direction").c_str()), spotLights[i].getDirection().x, spotLights[i].getDirection().y, spotLights[i].getDirection().z);
-            glUniform3f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].ambient").c_str()), spotLights[i].getAmbient().r, spotLights[i].getAmbient().g, spotLights[i].getAmbient().b);
-            glUniform3f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].diffuse").c_str()), spotLights[i].getDiffuse().r, spotLights[i].getDiffuse().g, spotLights[i].getDiffuse().b);
-            glUniform3f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].specular").c_str()), spotLights[i].getSpecular().r, spotLights[i].getSpecular().g, spotLights[i].getSpecular().b);
-            glUniform1f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].constant").c_str()), spotLights[i].getConstant());
-            glUniform1f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].linear").c_str()), spotLights[i].getLinear());
-            glUniform1f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].quadratic").c_str()), spotLights[i].getQuadratic());
-            glUniform1f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].cosCutOff").c_str()), spotLights[i].getCosCutOff());
-            glUniform1f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].cosOuterCutOff").c_str()), spotLights[i].getCosOuterCutOff());
-        }
 
         // Spot Light de la caméra
-        glUniform3f(glGetUniformLocation(objectShader.ID, "spotLight.position"), camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
-        glUniform3f(glGetUniformLocation(objectShader.ID, "spotLight.direction"), camera.getFront().x, camera.getFront().y, camera.getFront().z);
-        glUniform3f(glGetUniformLocation(objectShader.ID, "spotLight.ambient"), 0.0f, 0.0f, 0.0f);
-        glUniform3f(glGetUniformLocation(objectShader.ID, "spotLight.diffuse"), 1.0f, 1.0f, 1.0f);
-        glUniform3f(glGetUniformLocation(objectShader.ID, "spotLight.specular"), 1.0f, 1.0f, 1.0f);
-        glUniform1f(glGetUniformLocation(objectShader.ID, "spotLight.constant"), 1.0f);
-        glUniform1f(glGetUniformLocation(objectShader.ID, "spotLight.linear"), 0.09f);
-        glUniform1f(glGetUniformLocation(objectShader.ID, "spotLight.quadratic"), 0.032f);
-        glUniform1f(glGetUniformLocation(objectShader.ID, "spotLight.cosCutOff"), glm::cos(glm::radians(12.5f)));
-        glUniform1f(glGetUniformLocation(objectShader.ID, "spotLight.cosOuterCutOff"), glm::cos(glm::radians(15.0f)));
+        glUniform3f(glGetUniformLocation(objectShader.ID, "spotLights[0].position"), camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
+        glUniform3f(glGetUniformLocation(objectShader.ID, "spotLights[0].direction"), camera.getFront().x, camera.getFront().y, camera.getFront().z);
+        glUniform3f(glGetUniformLocation(objectShader.ID, "spotLights[0].ambient"), 0.0f, 0.0f, 0.0f);
+        glUniform3f(glGetUniformLocation(objectShader.ID, "spotLights[0].diffuse"), 1.0f, 1.0f, 1.0f);
+        glUniform3f(glGetUniformLocation(objectShader.ID, "spotLights[0].specular"), 1.0f, 1.0f, 1.0f);
+        glUniform1f(glGetUniformLocation(objectShader.ID, "spotLights[0].constant"), 1.0f);
+        glUniform1f(glGetUniformLocation(objectShader.ID, "spotLights[0].linear"), 0.09f);
+        glUniform1f(glGetUniformLocation(objectShader.ID, "spotLights[0].quadratic"), 0.032f);
+        glUniform1f(glGetUniformLocation(objectShader.ID, "spotLights[0].cosCutOff"), glm::cos(glm::radians(12.5f)));
+        glUniform1f(glGetUniformLocation(objectShader.ID, "spotLights[0].cosOuterCutOff"), glm::cos(glm::radians(15.0f)));
+
+        // Autres Spot Lights
+        for (unsigned int i = 1; i < (spotLights.size()+1); i++)
+        {
+            glUniform3f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].position").c_str()), spotLights[i-1].getPosition().x, spotLights[i-1].getPosition().y, spotLights[i-1].getPosition().z);
+            glUniform3f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].direction").c_str()), spotLights[i-1].getDirection().x, spotLights[i-1].getDirection().y, spotLights[i-1].getDirection().z);
+            glUniform3f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].ambient").c_str()), spotLights[i-1].getAmbient().r, spotLights[i-1].getAmbient().g, spotLights[i-1].getAmbient().b);
+            glUniform3f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].diffuse").c_str()), spotLights[i-1].getDiffuse().r, spotLights[i-1].getDiffuse().g, spotLights[i-1].getDiffuse().b);
+            glUniform3f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].specular").c_str()), spotLights[i-1].getSpecular().r, spotLights[i-1].getSpecular().g, spotLights[i-1].getSpecular().b);
+            glUniform1f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].constant").c_str()), spotLights[i-1].getConstant());
+            glUniform1f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].linear").c_str()), spotLights[i-1].getLinear());
+            glUniform1f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].quadratic").c_str()), spotLights[i-1].getQuadratic());
+            glUniform1f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].cosCutOff").c_str()), spotLights[i-1].getCosCutOff());
+            glUniform1f(glGetUniformLocation(objectShader.ID, ("spotLights[" + to_string(i) + "].cosOuterCutOff").c_str()), spotLights[i-1].getCosOuterCutOff());
+        }
 
         glUniform3f(glGetUniformLocation(objectShader.ID, "viewPos"), camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
 
